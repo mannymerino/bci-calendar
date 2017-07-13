@@ -1,0 +1,302 @@
+{
+    "dataRoles": [
+        {
+            "displayName": "Date Field",
+            "name": "category",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "Measure Data",
+            "name": "measure",
+            "kind": "Measure"
+        },
+        {
+            "displayName": "Tooltip",
+            "name": "tooltipmeasure",
+            "kind": "Measure"
+        }
+    ],
+    "objects": {
+        "calendar": {
+            "displayName": "Calendar Format",
+            "properties":{
+                "monthYearDisplay": {
+                    "displayName": "Month/Year Display",
+                    "type": {
+                        "enumeration": [
+                           {
+                               "value": "none",
+                               "displayName": "None"
+                           },
+                           {
+                               "value": "month",
+                               "displayName": "Month Only"
+                           },
+                           {
+                               "value": "monthYear",
+                               "displayName": "Month and Year"
+                           }
+                        ]
+                    }
+                },
+                "weekdayFormat": {
+                    "displayName": "Weekday Format",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "short",
+                                "displayName": "Short"
+                            },
+                            {
+                                "value": "long",
+                                "displayName": "Long"
+                            }
+                        ]
+                    }
+                },
+                "borderWidth": {
+                    "displayName": "Border Thickness",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "borderColor": {
+                    "displayName": "Border Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": {
+                                    "nullable": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "fontColor": {
+                    "displayName": "Font Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontWeight": {
+                    "displayName": "Font Weight",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "textSize": {
+                    "displayName": "Text Size",
+                    "description": "(in pixels)",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "monthAlignment": {
+                    "displayName": "Month Alignment",
+                    "type": {
+                        "formatting": {
+                            "alignment": true
+                        }
+                    }
+                },
+                "weekAlignment": {
+                    "displayName": "Week Alignment",
+                    "type": {
+                        "formatting": {
+                            "alignment": true
+                        }
+                    }
+                },
+                "dayAlignment": {
+                    "displayName": "Day Alignment",
+                    "type": {
+                        "formatting": {
+                            "alignment": true
+                        }
+                    }
+                }
+            }
+        },
+        "calendarColors": {
+            "displayName": "Data Colors",
+            "properties": {
+                "diverging": {
+                    "displayName": "Diverging",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "startColor": {
+                    "displayName": "Minimum Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": {
+                                    "nullable": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "centerColor": {
+                    "displayName": "Center Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": {
+                                    "nullable": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "endColor": {
+                    "displayName": "Maximum Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": {
+                                    "nullable": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "minValue": {
+                    "displayName": "Minimum Value",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "centerValue": {
+                    "displayName": "Center Value",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "maxValue": {
+                    "displayName": "Maximum Value",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "noDataColor": {
+                    "displayName": "No Data Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": {
+                                    "nullable": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "dataLabels": {
+            "displayName": "Data Labels",
+            "properties": {
+                "show": {
+                    "displayName": "Show Data Labels",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "unit": {
+                    "displayName": "Display Unit",
+                    "type": {
+                        "formatting": {
+                            "labelDisplayUnits": true
+                        }
+                    }
+                },
+                "precision": {
+                    "displayName": "Decimal Places",
+                    "placeHolderText": "Auto",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "fontColor": {
+                    "displayName": "Font Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontWeight": {
+                    "displayName": "Font Weight",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "textSize": {
+                    "displayName": "Text Size",
+                    "description": "(in pixels)",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "alignment": {
+                    "displayName": "Alignment",
+                    "type": {
+                        "formatting": {
+                            "alignment": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "dataViewMappings": [
+        {
+            "conditions": [
+                {
+                    "category": {
+                        "max": 1
+                    },
+                    "measure": {
+                        "max": 1
+                    }
+                }
+            ],
+            "categorical": {
+                "categories": {
+                    "for": {
+                        "in": "category"
+                    },
+                    "dataReductionAlgorithm": {
+                        "top": {}
+                    }
+                },
+                "values": {
+                    "select": [
+                        {
+                            "bind": {
+                                "to": "measure"
+                            }
+                        },
+                        {
+                            "bind":{
+                                "to": "tooltipmeasure"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "supportsHighlight": true
+}

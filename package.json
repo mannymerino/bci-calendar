@@ -1,0 +1,37 @@
+{
+  "name": "bci-calendar",
+  "version": "1.0.1",
+  "description": "BCI Calendar is a Power BI custom visual that allows you to view your aggregated data in a month view.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mannymerino/bci-calendar.git"
+  },
+  "keywords": [
+    "powerbi",
+    "visuals",
+    "calendar"
+  ],
+  "scripts": {
+    "pbiviz": "pbiviz",
+    "start": "pbiviz start",
+    "package": "pbiviz package"
+  },
+  "author": {
+    "name": "Manny Merino",
+    "email": "mannymerino@hotmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mannymerino/bci-calendar/issues"
+  },
+  "homepage": "https://github.com/mannymerino/bci-calendar#readme",
+  "devDependencies": {
+    "powerbi-visuals-utils-dataviewutils": "1.0.1",
+    "powerbi-visuals-utils-tooltiputils": "^1.0.0"
+  },
+  "dependencies": {
+    "d3": "^3.5.5",
+    "powerbi-visuals-utils-formattingutils": "^2.1.0",
+    "powerbi-visuals-utils-interactivityutils": "^1.0.0"
+  }
+}

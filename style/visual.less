@@ -1,0 +1,37 @@
+@import (less) "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.css";
+@import (less) "node_modules/powerbi-visuals-utils-formattingutils/lib/index.css";
+
+.bci-calendar {
+    border-collapse: collapse;
+    font-family: 'Segoe UI', 'wf_segoe-ui_normal', helvetica, arial, sans-serif;
+}
+
+.bci-calendar tbody td {
+    border: 1px solid black;
+    text-align: right;
+    vertical-align: top;
+    width: 14%;
+}
+
+.bci-calendar td.empty {
+    border: none;
+}
+
+.bci-calendar-parent {
+    position: relative;
+    height: 100%;
+}
+
+.bci-calendar-day {
+    width: 100%;
+}
+
+.bci-calendar-dataLabel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: auto;
+}

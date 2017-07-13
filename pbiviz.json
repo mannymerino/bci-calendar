@@ -1,0 +1,35 @@
+{
+  "visual": {
+    "name": "bciCalendar",
+    "displayName": "BciCalendar",
+    "guid": "bciCalendarCC0FA2BFE4B54EE1ACCFE383B9B1DE61",
+    "visualClassName": "Visual",
+    "version": "1.0.0",
+    "description": "BCI Calendar is a Power BI custom visual that allows you to view your aggregated data in a month view.",
+    "supportUrl": "https://github.com/mannymerino/bci-calendar/issues",
+    "gitHubUrl": "https://github.com/mannymerino/bci-calendar"
+  },
+  "apiVersion": "1.7.0",
+  "author": {
+    "name": "Manny Merino",
+    "email": "mannymerino@hotmail.com"
+  },
+  "assets": {
+    "icon": "assets/icon.png"
+  },
+  "externalJS": [
+    "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.js",
+    "node_modules/d3/d3.min.js",
+    "node_modules/globalize/lib/globalize.js",
+    "node_modules/globalize/lib/cultures/globalize.culture.en-US.js",
+    "node_modules/powerbi-visuals-utils-typeutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-svgutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-formattingutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-tooltiputils/lib/index.js"
+  ],
+  "style": "style/visual.less",
+  "capabilities": "capabilities.json",
+  "dependencies": "dependencies.json",
+  "stringResources": []
+}
