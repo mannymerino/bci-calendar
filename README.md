@@ -50,6 +50,7 @@ The Power BI custom visual is available in the [Office Store](https://store.offi
 ## Install Custom Visual 
 1. If editing a report using the Power BI Service, be sure to first be in edit mode on your desired report.
 2. From the visualizations fly-out, choose `Import from file`.
+   
    ![Import Visual](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-import-visual.png "Import Visual")
    _Note: If using older versions of Power BI, this may be labeled `Import custom visual`._
 3. Browse to the location where you downloaded the custom visual to and choose the `BciCalendar.1.0.0.0.pbiviz` file. _Note: The version number may vary from what's shown in this document. Be sure to select the correct file._
@@ -94,6 +95,7 @@ The following customization and formatting options are available for this custom
 These are all default Power BI visual formatting options.
 # Known Limitations
 * The visual doesn't support date hierarchies. If you are having issues viewing your data in the visual, make sure your Date Field is not displaying as "Date Hierarchy".
+  
   ![Date Hierarchy](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-date-hierarchy.png "Date Hierarchy")
 * The visual will use the month/year from the first date in the selected dataset. If your dataset spans multiple months or years, the visual will only show the first month/year.
 * The optimal experience for visualizing your data using this visual is when your report or page is filtered to view one month at a time. For example, using a month/year slicer or page filter.
