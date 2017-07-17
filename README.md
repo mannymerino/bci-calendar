@@ -21,7 +21,7 @@ BCI Calendar is a Power BI custom visual that allows you to view your aggregated
       * [Calendar Format](#calendar-format)
       * [Data Colors](#data-colors)
       * [Data Labels](#data-labels)
-* [Known Limitations](#limitations)
+* [Known Limitations](#known-limitations)
 # Features
 ## Supported Fields
 ### Date Field
@@ -52,7 +52,7 @@ The Power BI custom visual is available in the [Office Store](https://store.offi
 2. From the visualizations fly-out, choose `Import from file`.
    
    ![Import Visual](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-import-visual.png "Import Visual")
-   
+
    _Note: If using older versions of Power BI, this may be labeled `Import custom visual`._
 3. Browse to the location where you downloaded the custom visual to and choose the `BciCalendar.1.0.0.0.pbiviz` file. _Note: The version number may vary from what's shown in this document. Be sure to select the correct file._
 4. Once installed, you will see the BciCalendar icon ![BciCalendar icon](https://github.com/mannymerino/bci-calendar/blob/master/assets/icon.png "BciCalendar icon") in the Visualizations pane's toolbox area.
