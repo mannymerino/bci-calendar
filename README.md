@@ -42,13 +42,15 @@ The visual includes selection interaction functionality. Clicking on a particula
 ![Selection Interaction](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-selection-interaction.png "Selection Interaction")
 ### Tooltips
 As described in the [Tooltip](#tooltip) section above, this visual supports tooltips and allows customization by adding additional data fields to the `Tooltip` field.
+
 ![Tooltips](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-tooltips.png "Tooltips")
 # Usage
 ## Download Custom Visual
 The Power BI custom visual is available in the [Office Store](https://store.office.com/en-us/appshome.aspx) here: [Link coming soon]. Follow the instructions to download the visual to your computer, and optionally download a sample Power BI report containing the visual and providing examples of using and customizing it.
 ## Install Custom Visual 
 1. If editing a report using the Power BI Service, be sure to first be in edit mode on your desired report.
-2. From the visualizations fly-out, choose `Import from file`. ![Import Visual](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-import-visual.png "Import Visual")
+2. From the visualizations fly-out, choose `Import from file`.
+   ![Import Visual](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-import-visual.png "Import Visual")
    _Note: If using older versions of Power BI, this may be labeled `Import custom visual`._
 3. Browse to the location where you downloaded the custom visual to and choose the `BciCalendar.1.0.0.0.pbiviz` file. _Note: The version number may vary from what's shown in this document. Be sure to select the correct file._
 4. Once installed, you will see the BciCalendar icon ![BciCalendar icon](https://github.com/mannymerino/bci-calendar/blob/master/assets/icon.png "BciCalendar icon") in the Visualizations pane's toolbox area.
@@ -91,7 +93,8 @@ The following customization and formatting options are available for this custom
 #### Title, Background, Lock aspect, Border, General
 These are all default Power BI visual formatting options.
 # Known Limitations
-* The visual doesn't support date hierarchies. If you are having issues viewing your data in the visual, make sure your Date Field is not displaying as "Date Hierarchy". ![Date Hierarchy](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-date-hierarchy.png "Date Hierarchy")
+* The visual doesn't support date hierarchies. If you are having issues viewing your data in the visual, make sure your Date Field is not displaying as "Date Hierarchy".
+  ![Date Hierarchy](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-date-hierarchy.png "Date Hierarchy")
 * The visual will use the month/year from the first date in the selected dataset. If your dataset spans multiple months or years, the visual will only show the first month/year.
 * The optimal experience for visualizing your data using this visual is when your report or page is filtered to view one month at a time. For example, using a month/year slicer or page filter.
 * Selection interaction is only one-way in this current version. In other words, you can select a day in the month and other visuals will update accordingly but selecting a data point in another visual will not affect the calendar visual. Stay tuned for a future update that will include this functionality!
