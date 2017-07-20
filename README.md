@@ -36,14 +36,14 @@ Choose a minimum and maximum color value and the visual will display a color gra
 ![Data Colors](assets/bci-calendar-data-colors.png "Data Colors")
 ### Diverging Colors
 If you would like to include a center color, toggle the `Diverging` slider to `On` and specify a `Center Color`. You can also specify a `Center Value` if desired.
-![Diverging Colors](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-diverging-colors.png "Diverging Colors")
+![Diverging Colors](assets/bci-calendar-diverging-colors.png "Diverging Colors")
 ### Selection Interaction
 The visual includes selection interaction functionality. Clicking on a particular day in the calendar visual will update the selection in other visuals on the page accordingly.
-![Selection Interaction](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-selection-interaction.png "Selection Interaction")
+![Selection Interaction](assets/bci-calendar-selection-interaction.png "Selection Interaction")
 ### Tooltips
 As described in the [Tooltip](#tooltip) section above, this visual supports tooltips and allows customization by adding additional data fields to the `Tooltip` field.
 
-![Tooltips](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-tooltips.png "Tooltips")
+![Tooltips](assets/bci-calendar-tooltips.png "Tooltips")
 # Usage
 ## Download Custom Visual
 The Power BI custom visual is available in the [Office Store](https://store.office.com/en-us/appshome.aspx) here: [Link coming soon]. Follow the instructions to download the visual to your computer, and optionally download a sample Power BI report containing the visual and providing examples of using and customizing it.
@@ -51,18 +51,18 @@ The Power BI custom visual is available in the [Office Store](https://store.offi
 1. If editing a report using the Power BI Service, be sure to first be in edit mode on your desired report.
 2. From the visualizations fly-out, choose `Import from file`.
    
-   ![Import Visual](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-import-visual.png "Import Visual")
+   ![Import Visual](assets/bci-calendar-import-visual.png "Import Visual")
 
    _Note: If using older versions of Power BI, this may be labeled `Import custom visual`._
 3. Browse to the location where you downloaded the custom visual to and choose the `BciCalendar.1.0.0.0.pbiviz` file. _Note: The version number may vary from what's shown in this document. Be sure to select the correct file._
-4. Once installed, you will see the BciCalendar icon ![BciCalendar icon](https://github.com/mannymerino/bci-calendar/blob/master/assets/icon.png "BciCalendar icon") in the Visualizations pane's toolbox area.
+4. Once installed, you will see the BciCalendar icon ![BciCalendar icon](assets/icon.png "BciCalendar icon") in the Visualizations pane's toolbox area.
 ## Customize Visual
 ### Fields
 Select your `Date Field`, `Measure Data`, and `Tooltip` fields as necessary for your reporting needs. Please see [Known Limitations](#known-limitations) for an explanation on a limitation with using the `Date Field`. _Note: You are limited to one `Date Field` and one `Measure Data` field. You can choose as many `Tooltip` fields as desired._
 ### Format
 The following customization and formatting options are available for this custom visual.
 #### Calendar Format
-![Calendar Format](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-format-calendar-format.png "Calendar Format")
+![Calendar Format](assets/bci-calendar-format-calendar-format.png "Calendar Format")
 * `Month/Year Display`: Choose from `None`, `Month Only`, and `Month and Year` to customize how the month and/or year are displayed in the visual.
 * `Weekday Format`: Choose from `Short` or `Long` to customize how the weekday labels are displayed. `Short` displays the first three letters of the weekday. `Long` displays the full weekday name.
 * `Border Thickness`: Specify the thickness, in pixels, of the border displayed around each day.
@@ -74,7 +74,7 @@ The following customization and formatting options are available for this custom
 * `Week Alignment`: Choose the desired alignment for the Weekdays.
 * `Day Alignment`: Choose the desired alignment for the Days.
 #### Data Colors
-![Data Colors](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-format-data-colors.png "Data Colors")
+![Data Colors](assets/bci-calendar-format-data-colors.png "Data Colors")
 * `Diverging`: Toggle this slider to control whether the data colors use a center color and value.
 * `Minimum Color`: Use the color picker to choose a color for the either minimum data value, or if specified, for the `Minimum Value`.
 * `Center Color`: Use the color picker to choose a color for the either median data value, or if specified, for the `Center Value`. This value is nulled out if `Diverging` is set to `Off`.
@@ -84,7 +84,7 @@ The following customization and formatting options are available for this custom
 * `Maximum Value`: If specified, the `Maximum Color` will be based on this value. Leave blank to have the `Maximum Color` be based on the maximum value of the `Measure Data` field.
 * `No Data Color`: Use the color picker to choose a color for days with no data.
 #### Data Labels
-![Data Labels](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-format-data-labels.png "Data Labels")
+![Data Labels](assets/bci-calendar-format-data-labels.png "Data Labels")
 * `On/Off`: Toggle this slider to control whether the aggregated data values from the `Measure Data` field are displayed for each day.
 * `Display Unit`: Use this dropdown to choose a desired display unit to convert the data labels to.
 * `Decimal Places`: Enter the number of desired number of decimal places to be displayed in the data labels.
@@ -97,7 +97,7 @@ These are all default Power BI visual formatting options.
 # Known Limitations
 * The visual doesn't support date hierarchies. If you are having issues viewing your data in the visual, make sure your Date Field is not displaying as "Date Hierarchy".
   
-  ![Date Hierarchy](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-date-hierarchy.png "Date Hierarchy")
+  ![Date Hierarchy](assets/bci-calendar-date-hierarchy.png "Date Hierarchy")
 * The visual will use the month/year from the first date in the selected dataset. If your dataset spans multiple months or years, the visual will only show the first month/year.
 * The optimal experience for visualizing your data using this visual is when your report or page is filtered to view one month at a time. For example, using a month/year slicer or page filter.
 * Selection interaction is only one-way in this current version. In other words, you can select a day in the month and other visuals will update accordingly but selecting a data point in another visual will not affect the calendar visual. Stay tuned for a future update that will include this functionality!
