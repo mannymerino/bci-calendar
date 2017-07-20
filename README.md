@@ -33,7 +33,7 @@ By default, the [Date Field](#date-field) will be displayed as the tooltip heade
 ## Formatting and Customization
 ### Data-driven Colors
 Choose a minimum and maximum color value and the visual will display a color gradient based on the [Measure Data](#measure-data) field supplied. By default, the visual will use the minimum and maximum values from the data, however you can also specify `Minimum Value` and/or `Maximum Value` to supply your own min/max for the colors to be based on.
-![Data Colors](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-data-colors.png "Data Colors")
+![Data Colors](assets/bci-calendar-data-colors.png "Data Colors")
 ### Diverging Colors
 If you would like to include a center color, toggle the `Diverging` slider to `On` and specify a `Center Color`. You can also specify a `Center Value` if desired.
 ![Diverging Colors](https://github.com/mannymerino/bci-calendar/blob/master/assets/bci-calendar-diverging-colors.png "Diverging Colors")
