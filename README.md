@@ -103,4 +103,4 @@ These are all default Power BI visual formatting options.
 * The optimal experience for visualizing your data using this visual is when your report or page is filtered to view one month at a time. For example, using a month/year slicer or page filter.
 * Selection interaction is only one-way in this current version. In other words, you can select a day in the month and other visuals will update accordingly but selecting a data point in another visual will not affect the calendar visual. Stay tuned for a future update that will include this functionality!
 # Support
-[Support](./wiki/Support)
+[Support](../../wiki/Support)
