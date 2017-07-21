@@ -22,6 +22,7 @@ BCI Calendar is a Power BI custom visual that allows you to view your aggregated
       * [Data Colors](#data-colors)
       * [Data Labels](#data-labels)
 * [Known Limitations](#known-limitations)
+* [Support](#support)
 # Features
 ## Supported Fields
 ### Date Field
@@ -101,3 +102,5 @@ These are all default Power BI visual formatting options.
 * The visual will use the month/year from the first date in the selected dataset. If your dataset spans multiple months or years, the visual will only show the first month/year.
 * The optimal experience for visualizing your data using this visual is when your report or page is filtered to view one month at a time. For example, using a month/year slicer or page filter.
 * Selection interaction is only one-way in this current version. In other words, you can select a day in the month and other visuals will update accordingly but selecting a data point in another visual will not affect the calendar visual. Stay tuned for a future update that will include this functionality!
+# Support
+[Support](/support)
