@@ -47,7 +47,7 @@ As described in the [Tooltip](#tooltip) section above, this visual supports tool
 ![Tooltips](assets/bci-calendar-tooltips.png "Tooltips")
 # Usage
 ## Download Custom Visual
-The Power BI custom visual is available in the [Office Store](https://store.office.com/en-us/appshome.aspx) here: [Link coming soon]. Follow the instructions to download the visual to your computer, and optionally download a sample Power BI report containing the visual and providing examples of using and customizing it.
+The Power BI custom visual is available in the [Office Store](https://store.office.com/en-us/app.aspx?assetid=WA104381096&sourcecorrid=437bb07a-b9af-41e0-8c0d-41f3c522df9d&searchapppos=0&ui=en-US&rs=en-US&ad=US&appredirect=false). Follow the instructions to download the visual to your computer, and optionally download a sample Power BI report containing the visual and providing examples of using and customizing it.
 ## Install Custom Visual 
 1. If editing a report using the Power BI Service, be sure to first be in edit mode on your desired report.
 2. From the visualizations fly-out, choose `Import from file`.
