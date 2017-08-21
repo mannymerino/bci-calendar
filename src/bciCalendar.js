@@ -49,7 +49,10 @@
         var month = viewModel.month;
         var year = viewModel.year;
 
-        var weeks = monthDays(year, month);
+        // resequence dayNames[] based on settings.weekStartDay
+        var dayNames = consts.dayNames.slice(settings.weekStartDay, consts.dayNames.length).concat(consts.dayNames.slice(0, settings.weekStartDay));
+
+        var weeks = monthDays(year, month, settings.weekStartDay);
         var thead = calendar.append('thead');
         var tbody = calendar.append('tbody');
 
@@ -73,7 +76,7 @@
         thead 
             .append('tr')
             .selectAll('td')
-            .data((settings.weekdayFormat === 'short' ? consts.dayNames.map(d => d.substr(0,3)) : consts.dayNames))
+            .data((settings.weekdayFormat === 'short' ? dayNames.map(d => d.substr(0,3)) : dayNames))
             .enter()
             .append('td')
             .style({
@@ -247,9 +250,10 @@
      * Credit: Ported from npm package 'calendar' 
      * https://www.npmjs.com/package/calendar
      */
+    let firstWeekDay = 0;
     var weekStartDate = function (date) {
         var startDate = new Date(date.getTime());
-        while (startDate.getDay() !== 0) { // TODO: update to allow dynamically setting firtWeekDay >> this.firstWeekDay) {
+        while (startDate.getDay() !== firstWeekDay) {
             startDate.setDate(startDate.getDate() - 1);
         }
         return startDate;
@@ -276,7 +280,8 @@
         } while ((date.getMonth()<=month) && (date.getFullYear()===year));
         return weeks;
     };
-    function monthDays (year, month) {
+    function monthDays (year, month, weekStartDay) {
+        firstWeekDay = weekStartDay || 0;
         var getDayOrZero = function getDayOrZero(date) {
             return date.getMonth() === month ? date.getDate() : 0;
         };
