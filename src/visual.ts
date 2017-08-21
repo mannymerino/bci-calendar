@@ -51,6 +51,7 @@ module powerbi.extensibility.visual {
     interface CalendarSettings {
         monthYearDisplay: string;
         weekdayFormat: string;
+        weekStartDay: number;
         borderWidth: number;
         borderColor: Fill;
         fontColor: Fill;
@@ -89,6 +90,7 @@ module powerbi.extensibility.visual {
         let defaultSettings: CalendarSettings = {
             monthYearDisplay: 'monthYear',
             weekdayFormat: 'short',
+            weekStartDay: 0,
             borderWidth: 1,
             borderColor: {
                 solid: {
@@ -174,6 +176,7 @@ module powerbi.extensibility.visual {
         let calendarSettings: CalendarSettings = {
             monthYearDisplay: getValue<string>(objects, 'calendar', 'monthYearDisplay', defaultSettings.monthYearDisplay),
             weekdayFormat: getValue<string>(objects, 'calendar', 'weekdayFormat', defaultSettings.weekdayFormat),
+            weekStartDay: getValue<number>(objects, 'calendar', 'weekStartDay', defaultSettings.weekStartDay),
             borderWidth: getValue<number>(objects, 'calendar', 'borderWidth', defaultSettings.borderWidth),
             borderColor: getValue<Fill>(objects, 'calendar', 'borderColor', defaultSettings.borderColor),
             fontColor: getValue<Fill>(objects, 'calendar', 'fontColor', defaultSettings.fontColor),
@@ -318,6 +321,7 @@ module powerbi.extensibility.visual {
                         properties: {
                             monthYearDisplay: this.calendarSettings.monthYearDisplay,
                             weekdayFormat: this.calendarSettings.weekdayFormat,
+                            weekStartDay: this.calendarSettings.weekStartDay,
                             borderWidth: this.calendarSettings.borderWidth,
                             borderColor: this.calendarSettings.borderColor,
                             fontColor: this.calendarSettings.fontColor,

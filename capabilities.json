@@ -54,6 +54,41 @@
                         ]
                     }
                 },
+                "weekStartDay": {
+                    "displayName": "Week Start Day",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "0",
+                                "displayName": "Sunday"
+                            },
+                            {
+                                "value": "1",
+                                "displayName": "Monday"
+                            },
+                            {
+                                "value": "2",
+                                "displayName": "Tuesday"
+                            },
+                            {
+                                "value": "3",
+                                "displayName": "Wednesday"
+                            },
+                            {
+                                "value": "4",
+                                "displayName": "Thursday"
+                            },
+                            {
+                                "value": "5",
+                                "displayName": "Friday"
+                            },
+                            {
+                                "value": "6",
+                                "displayName": "Saturday"
+                            }
+                        ]
+                    }
+                },
                 "borderWidth": {
                     "displayName": "Border Thickness",
                     "type": {
