@@ -37,9 +37,9 @@
             allowInteractions: allowInteractions
         };
 
-        // var cal = new Calendar();
         var calendar = element;
         var className = calendar.attr("class");
+        var colspan = settings.weekNumbers.show ? 8 : 7;
 
         if (viewModel.dataPoints.length == 0) {
             noData(calendar);
@@ -52,17 +52,30 @@
         // resequence dayNames[] based on settings.weekStartDay
         var dayNames = consts.dayNames.slice(settings.weekStartDay, consts.dayNames.length).concat(consts.dayNames.slice(0, settings.weekStartDay));
 
-        var weeks = monthDays(year, month, settings.weekStartDay);
+        var weeks = monthDays(year, month, { 
+            weekStartDay: settings.weekStartDay,
+            showWeekNumbers: settings.weekNumbers.show,
+            useIso: settings.weekNumbers.useIso
+        });
+
         var thead = calendar.append('thead');
         var tbody = calendar.append('tbody');
 
         mapData(weeks, viewModel);
+        
+        if (settings.weekNumbers.show) {
+            // add blank element to start or end  of dayNames[]
+            settings.weekNumbers.placement === 'left' ? dayNames.unshift('') : dayNames.push('');
+            // add week numbers for each week[] in weeks[]
+            addWeekNumbers(weeks, settings.weekNumbers.placement);
+        }
 
+        // set month header row
         if (settings.monthYearDisplay !== 'none') {
             thead 
                 .append('tr')
                 .append('td')
-                .attr('colspan', 7)
+                .attr('colspan', colspan)
                 .style({
                     'text-align': 'center',
                     'color': settings.fontColor.solid.color,
@@ -73,6 +86,7 @@
                 .text(consts.monthNames[month] + (settings.monthYearDisplay === 'monthYear' ? ' ' + year : ''));
         }
 
+        // set weekday header row
         thead 
             .append('tr')
             .selectAll('td')
@@ -131,16 +145,52 @@
                 .enter()
                 .append('td')
                 .attr('class', function (d) {
-                    return d.day > 0 ? '' : 'empty';
+                    let className = '';
+                    if (d.day <= 0) {
+                        className = 'empty';
+                    } else if (!d.day && d.week && d.week > 0) {
+                        className = 'week';
+                    }
+                    return className;
                 })
                 .attr('id', function(d) {
                     return d.day > 0 ? className + '-' + viewModel.year.toString() + viewModel.month.toString() + d.day.toString() : '';
                 })
-                .style({
-                    'color': settings.fontColor.solid.color,
-                    'font-size': settings.textSize + 'px',
-                    'font-weight': settings.fontWeight,
-                    'text-align': settings.dayAlignment
+                .style('color', function(d) {
+                    let color = '';
+                    if (d.day > 0) {
+                        color = settings.fontColor.solid.color;
+                    } else if (!d.day && d.week > 0) {
+                        color = settings.weekNumbers.fontColor.solid.color;
+                    }
+                    return color;
+                })
+                .style('font-size', function(d) {
+                    let size = '';
+                    if (d.day > 0) {
+                        size = settings.textSize + 'px';
+                    } else if (!d.day && d.week > 0) {
+                        size = settings.weekNumbers.textSize + 'px';
+                    }
+                    return size;
+                })
+                .style('font-weight', function(d) {
+                    let weight = '';
+                    if (d.day > 0) {
+                        weight = settings.fontWeight;
+                    } else if (!d.day && d.week > 0) {
+                        weight = settings.weekNumbers.fontWeight;
+                    }
+                    return weight;
+                })
+                .style('text-align', function(d) {
+                    let align = '';
+                    if (d.day > 0) {
+                        align = settings.dayAlignment;
+                    } else if (!d.day && d.week > 0) {
+                        align = settings.weekNumbers.alignment;
+                    }
+                    return align;
                 })
                 .style({
                     'border-width': settings.borderWidth + 'px',
@@ -151,11 +201,21 @@
                     return (noDataColor && (noDataColor !== null) && d.day > 0) ? noDataColor : '';
                 })
                 .append('div')
-                .attr('class', className + '-parent')
+                .attr('class', function(d) {
+                    return d.day > 0 ? className + '-parent' : '';
+                })
                 .append('div')
-                .attr('class', className + '-day')
+                .attr('class', function(d) {
+                    return d.day > 0 ? className + '-day' : '';
+                })
                 .text(function (d) {
-                    return d.day > 0 ? d.day : '';
+                    let label = '';
+                    if (d.day > 0) {
+                        label = d.day;
+                    } else if (!d.day && d.week > 0) {
+                        label = d.week;
+                    }
+                    return label;
                 });
         }
 
@@ -207,9 +267,9 @@
     function mapData (weeks, viewModel) {
         for (var w = 0; w < weeks.length; w++) {
             weeks[w] = weeks[w].map(function(d) {
-                var data = { day: d };
-                if (d > 0) {
-                    var date = new Date(viewModel.year, viewModel.month, d);
+                var data = { day: d.day, week: d.week };
+                if (d.day > 0) {
+                    var date = new Date(viewModel.year, viewModel.month, d.day);
                     // attempt to find matching date in viewModel.dataPoints
                     for (var i = 0; i < viewModel.dataPoints.length; i++) {
                         var dp = viewModel.dataPoints[i];
@@ -246,14 +306,30 @@
         }
     };
     
+    function addWeekNumbers(weeks, placement) {
+        for (let x = 0; x < weeks.length; x++) {
+            let week = weeks[x];
+            // get first non-0 week number
+            for (let y = 0; y < week.length; y++) {
+                let item = week[y];
+                if (item.week !== 0) {
+                    // add this to the start or end of the week[] array
+                    placement === 'left' ? week.unshift({ week: item.week }) : week.push({ week: item.week });
+                    break;
+                }
+            }
+        }
+    };
+
     /**
      * Credit: Ported from npm package 'calendar' 
      * https://www.npmjs.com/package/calendar
      */
-    let firstWeekDay = 0;
+    let _firstWeekDay = 0;
+    let _options = {};
     var weekStartDate = function (date) {
         var startDate = new Date(date.getTime());
-        while (startDate.getDay() !== firstWeekDay) {
+        while (startDate.getDay() !== _firstWeekDay) {
             startDate.setDate(startDate.getDate() - 1);
         }
         return startDate;
@@ -268,24 +344,33 @@
         var weeks = [],
             week = [],
             i = 0,
-            date = weekStartDate(new Date(year, month, 1));
+            date = weekStartDate(new Date(year, month, 1)),
+            weekNum = 0;
         do {
             for (i=0; i<7; i++) {
-                week.push(dayFormatter ? dayFormatter(date) : date);
+                weekNum = weekFormatter ? weekFormatter(date) : 0;
+                week.push({
+                    day: dayFormatter ? dayFormatter(date) : date,
+                    week: weekNum
+                });
                 date = new Date(date.getTime());
                 date.setDate(date.getDate() + 1);
             }
-            weeks.push(weekFormatter ? weekFormatter(week) : week);
+            weeks.push(week);
             week = [];
         } while ((date.getMonth()<=month) && (date.getFullYear()===year));
         return weeks;
     };
-    function monthDays (year, month, weekStartDay) {
-        firstWeekDay = weekStartDay || 0;
+    function monthDays (year, month, options) {
+        _firstWeekDay = options.weekStartDay || 0;
+        _options = options || {};
         var getDayOrZero = function getDayOrZero(date) {
             return date.getMonth() === month ? date.getDate() : 0;
         };
-        return monthDates(year, month, getDayOrZero);
+        var getWeekOrZero = function getWeekOrZero(date) {
+            return date.getMonth() === month ? date.getWeek(_options.showWeekNumbers && _options.useIso) : 0;
+        }
+        return monthDates(year, month, getDayOrZero, getWeekOrZero);
     };
 
     if (typeof define === 'function' && define.amd) {
@@ -295,3 +380,20 @@
     }
     this.bciCalendar = bciCalendar;
 }();
+
+Date.prototype.getWeek = function(useIso) {
+    if (useIso) {
+        let target = new Date(this.valueOf());
+        let dayNr =  (this.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    } else {
+        let onejan = new Date(this.getFullYear(), 0, 1);
+        return Math.ceil((((this.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+    }
+};
