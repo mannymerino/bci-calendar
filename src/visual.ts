@@ -62,6 +62,7 @@ module powerbi.extensibility.visual {
         dayAlignment: string;
         calendarColors: ColorSettings;
         dataLabels: DataLabelSettings;
+        weekNumbers: WeekNumberSettings;
     };
 
     interface ColorSettings {
@@ -84,6 +85,16 @@ module powerbi.extensibility.visual {
         textSize: number;
         alignment: string;
     };
+
+    interface WeekNumberSettings {
+        show: boolean;
+        useIso: boolean;
+        placement: string;
+        fontColor: Fill;
+        fontWeight: number;
+        textSize: number;
+        alignment: string;
+    }
 
     function visualTransform(options: VisualUpdateOptions, host: IVisualHost): CalendarViewModel {
         let dataViews = options.dataViews;
@@ -136,6 +147,19 @@ module powerbi.extensibility.visual {
             dataLabels: {
                 show: true,
                 unit: 0,
+                fontColor: {
+                    solid: {
+                        color: '#000'
+                    }
+                },
+                fontWeight: 100,
+                textSize: 8,
+                alignment: 'center'
+            },
+            weekNumbers: {
+                show: false,
+                useIso: false,
+                placement: 'left',
                 fontColor: {
                     solid: {
                         color: '#000'
@@ -203,6 +227,15 @@ module powerbi.extensibility.visual {
                 fontWeight: getValue<number>(objects, 'dataLabels', 'fontWeight', defaultSettings.dataLabels.fontWeight),
                 textSize: getValue<number>(objects, 'dataLabels', 'textSize', defaultSettings.dataLabels.textSize),
                 alignment: getValue<string>(objects, 'dataLabels', 'alignment', defaultSettings.dataLabels.alignment)
+            },
+            weekNumbers: {
+                show: getValue<boolean>(objects, 'showWeeks', 'show', defaultSettings.weekNumbers.show),
+                useIso: getValue<boolean>(objects, 'showWeeks', 'useIso', defaultSettings.weekNumbers.useIso),
+                placement: getValue<string>(objects, 'showWeeks', 'placement', defaultSettings.weekNumbers.placement),
+                fontColor: getValue<Fill>(objects, 'showWeeks', 'fontColor', defaultSettings.weekNumbers.fontColor),
+                fontWeight: getValue<number>(objects, 'showWeeks', 'fontWeight', defaultSettings.weekNumbers.fontWeight),
+                textSize: getValue<number>(objects, 'showWeeks', 'textSize', defaultSettings.weekNumbers.textSize),
+                alignment: getValue<string>(objects, 'showWeeks', 'alignment', defaultSettings.weekNumbers.alignment)
             }
         };
 
@@ -333,6 +366,21 @@ module powerbi.extensibility.visual {
                         },
                         selector: null
                     })
+                    break;
+                case 'showWeeks':
+                    objectEnumeration.push({
+                        objectName: objectName,
+                        properties: {
+                            show: this.calendarSettings.weekNumbers.show,
+                            useIso: this.calendarSettings.weekNumbers.useIso,
+                            placement: this.calendarSettings.weekNumbers.placement,
+                            fontColor: this.calendarSettings.weekNumbers.fontColor,
+                            fontWeight: this.calendarSettings.weekNumbers.fontWeight,
+                            textSize: this.calendarSettings.weekNumbers.textSize,
+                            alignment: this.calendarSettings.weekNumbers.alignment
+                        },
+                        selector: null
+                    });
                     break;
                 case 'calendarColors':
                     objectEnumeration.push({

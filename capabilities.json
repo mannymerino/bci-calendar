@@ -158,6 +158,73 @@
                 }
             }
         },
+        "showWeeks": {
+            "displayName": "Week Numbers",
+            "properties": {
+                "show": {
+                    "displayName": "Week Numbers",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "useIso": {
+                    "displayName": "Use ISO week-numbering",
+                    "description": "The ISO 8601 definition for week 01 is the week with the Gregorian year's first Thursday in it. See https://en.wikipedia.org/wiki/ISO_week_date#First_week",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "placement": {
+                    "displayName": "Placement",
+                    "description": "Place week numbers on the left or right side of the calendar.",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "left",
+                                "displayName": "Left"
+                            },
+                            {
+                                "value": "right",
+                                "displayName": "Right"
+                            }
+                        ]
+                    }
+                },
+                "fontColor": {
+                    "displayName": "Font Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontWeight": {
+                    "displayName": "Font Weight",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "textSize": {
+                    "displayName": "Text Size",
+                    "description": "(in pixels)",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "alignment": {
+                    "displayName": "Alignment",
+                    "type": {
+                        "formatting": {
+                            "alignment": true
+                        }
+                    }
+                }                
+            }
+        },
         "calendarColors": {
             "displayName": "Data Colors",
             "properties": {
