@@ -262,12 +262,17 @@ module powerbi.extensibility.visual {
             }
         }
 
-        let measureFormat = valueFormatter.create({
-            value: getValue<number>(objects, 'dataLabels', 'unit', defaultSettings.dataLabels.unit),
-            precision: getValue<number>(objects, 'dataLabels', 'precision', defaultSettings.dataLabels.precision)
+        let valueFormat = valueFormatter.create({
+            value: calendarSettings.dataLabels.unit,
+            precision: calendarSettings.dataLabels.precision
         });
 
         for (let i = 0, len = Math.max(category.values.length, dataValue.values.length); i < len; i++) {
+            let textFormat = valueFormatter.create({
+                value: valueFormat.options.value,
+                precision: valueFormat.options.precision,
+                format: valueFormatter.getFormatStringByColumn(dataValue.source)
+            });
             let selectionIdBuilder = host.createSelectionIdBuilder()
                 .withCategory(category, i);
             let selectionId = selectionIdBuilder.createSelectionId();
@@ -275,8 +280,8 @@ module powerbi.extensibility.visual {
 
             calendarDataPoints.push({
                 category: <string>category.values[i],
-                value: parseFloat(measureFormat.format(dataValue.values[i])),
-                valueText: measureFormat.format(dataValue.values[i]),
+                value: parseFloat(valueFormat.format(dataValue.values[i])),
+                valueText: textFormat.format(dataValue.values[i]),
                 rowdata: tabledata[i],
                 selected: false,
                 identity: selectionId,
@@ -297,6 +302,7 @@ module powerbi.extensibility.visual {
     export class Visual implements IVisual {
         private target: HTMLElement;
         private host: IVisualHost;
+        private locale: string;
         private calendar: any;
         private table: d3.Selection<HTMLTableElement>; //<SVGElement>;
         private calendarSettings: CalendarSettings;
@@ -313,6 +319,7 @@ module powerbi.extensibility.visual {
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
             this.host = options.host;
+            this.locale = options.host.locale;
 
             let table = this.table = d3.select(options.element)
                 .append('table').classed(this.className, true);
@@ -355,9 +362,10 @@ module powerbi.extensibility.visual {
             this.table.selectAll('*').remove();
             this.calendar = bciCalendar.loadCalendar(this.table, viewModel, this.calendarSettings, this.selectionManager, this.host.allowInteractions);
 
-            let cols = options.dataViews[0].metadata.columns.filter(c => !c.roles['category']).map(c => c.displayName);
+            let cols = options.dataViews[0].metadata.columns.filter(c => !c.roles['category']).map(c => c);
             this.tooltipServiceWrapper.addTooltip(this.table.selectAll('[id^=bci-calendar]'),
-                (tooltipEvent: TooltipEventArgs<CalendarDataPoint>) => Visual.getTooltipData(<CalendarDataPoint>tooltipEvent.data, cols),
+                (tooltipEvent: TooltipEventArgs<CalendarDataPoint>) => 
+                    Visual.getTooltipData(<CalendarDataPoint>tooltipEvent.data, cols, this.locale, viewModel.settings.dataLabels.unit, viewModel.settings.dataLabels.precision),
                 (tooltipEvent: TooltipEventArgs<CalendarDataPoint>) => null);
 
             if (this.interactivityService) {
@@ -459,17 +467,34 @@ module powerbi.extensibility.visual {
             return objectEnumeration;
         }
 
-        private static getTooltipData(value: any, cols: any): VisualTooltipDataItem[] {
+        private static getTooltipData(value: any, cols: any, locale: string, displayUnit: number, precision: number): VisualTooltipDataItem[] {
             var zip = rows => rows[0].map((_, c) => rows.map(row => row[c]));
             var tooltips = [];
             if (value.data != null && !isNaN(value.data.value)) {
                 var tooltipdata = zip([cols, value.data.rowdata]);
-                var date = new Date(value.data.category).toLocaleDateString();
+                var date = new Date(value.data.category).toLocaleDateString(locale);
                 tooltipdata.forEach((t) => {
-                    var temp = {};
+                    let format = valueFormatter.create({
+                        format: valueFormatter.getFormatStringByColumn(t[0]),
+                        value: displayUnit,
+                        precision: precision
+                    });
+                    let temp = {};
+
+                    // If value is the Measure Data field, 
+                    // then apply the Display Unit and Decimal Places 
+                    // settings to the formatted value.
+                    // Otherwise, just use the fields format string
+                    let value;
+                    if (t[0].roles.measure) {
+                        value = format.format(t[1]);
+                    } else {
+                        value = valueFormatter.format(t[1], format.options.format);
+                    }
+
                     temp['header'] = date;
-                    temp['displayName'] = t[0];
-                    temp['value'] = t[1];
+                    temp['displayName'] = t[0].displayName;
+                    temp['value'] = value;
                     tooltips.push(temp);
                 })
             } else {
