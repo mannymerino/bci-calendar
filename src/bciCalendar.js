@@ -232,9 +232,7 @@
             var day = date.getDate();
             var id = className + '-' + year.toString() + month.toString() + day.toString();
             var td = d3.select('#' + id)
-            td
-                .style('background-color', color(dataValue))
-                .on('click', itemSelect);
+            td.style('background-color', color(dataValue));
 
             height = height || td.node().getBoundingClientRect().height;
 
@@ -284,28 +282,6 @@
         }
     };
 
-    function itemSelect(d) {
-        var className = _this.calendar.attr('class');
-        var id = '#' + className + '-' 
-            + _this.viewModel.year.toString() 
-            + _this.viewModel.month.toString() 
-            + d.day.toString();
-        // allow selection only if the visual is rendered in a view that supports interactivity (e.g., Reports)
-        if (_this.allowInteractions) {
-            _this.selectionManager.select(d.data.selectionId).then(function(ids) {
-                d3.selectAll('[id^=' + className + ']').style({
-                    'opacity': ids.length > 0 ? .5 : 1
-                });
-
-                d3.select(id).style({
-                    'opacity': 1
-                });
-            });
-
-            d3.event.stopPropagation();
-        }
-    };
-    
     function addWeekNumbers(weeks, placement) {
         for (let x = 0; x < weeks.length; x++) {
             let week = weeks[x];

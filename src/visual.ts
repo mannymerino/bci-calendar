@@ -32,20 +32,30 @@ module powerbi.extensibility.visual {
     import ITooltipServiceWrapper = powerbi.extensibility.utils.tooltip.ITooltipServiceWrapper;
     import createTooltipServiceWrapper = powerbi.extensibility.utils.tooltip.createTooltipServiceWrapper;
 
+    // selection interaction libs
+    import createInteractivityService = powerbi.extensibility.utils.interactivity.createInteractivityService;
+    import appendClearCatcher = powerbi.extensibility.utils.interactivity.appendClearCatcher;
+    import ISelectionHandler = powerbi.extensibility.utils.interactivity.ISelectionHandler;
+    import SelectableDataPoint = powerbi.extensibility.utils.interactivity.SelectableDataPoint;
+    import IInteractiveBehavior = powerbi.extensibility.utils.interactivity.IInteractiveBehavior;
+    import IInteractivityService = powerbi.extensibility.utils.interactivity.IInteractivityService;
+    
     // ViewModel
     interface CalendarViewModel {
         dataPoints: CalendarDataPoint[];
         month: number;
         year: number;
         settings: CalendarSettings;
+        hasHighlights: boolean;
     };
 
-    interface CalendarDataPoint {
+    interface CalendarDataPoint extends SelectableDataPoint {
         value: number;
         valueText: string;
         category: string;
-        selectionId: ISelectionId;
         rowdata: any;
+        key: string;
+        highlight?: boolean;
     };
 
     interface CalendarSettings {
@@ -174,7 +184,8 @@ module powerbi.extensibility.visual {
             dataPoints: [],
             month: null,
             year: null,
-            settings: <CalendarSettings>{}
+            settings: <CalendarSettings>{},
+            hasHighlights: false
         };
 
         if (!dataViews
@@ -257,23 +268,30 @@ module powerbi.extensibility.visual {
         });
 
         for (let i = 0, len = Math.max(category.values.length, dataValue.values.length); i < len; i++) {
+            let selectionIdBuilder = host.createSelectionIdBuilder()
+                .withCategory(category, i);
+            let selectionId = selectionIdBuilder.createSelectionId();
+            let highlight: any = dataValue.highlights && dataValue.highlights[i] !== null;
+
             calendarDataPoints.push({
                 category: <string>category.values[i],
                 value: parseFloat(measureFormat.format(dataValue.values[i])),
                 valueText: measureFormat.format(dataValue.values[i]),
-                selectionId: host.createSelectionIdBuilder()
-                    .withCategory(category, i)
-                    .createSelectionId(),
-                rowdata: tabledata[i]
+                rowdata: tabledata[i],
+                selected: false,
+                identity: selectionId,
+                key: (selectionIdBuilder.createSelectionId() as powerbi.visuals.ISelectionId).getKey(),
+                highlight: highlight
             });
         }
 
-        return {
-            dataPoints: calendarDataPoints,
-            month: month,
-            year: year,
-            settings: calendarSettings
-        };
+        viewModel.dataPoints = calendarDataPoints;
+        viewModel.month = month;
+        viewModel.year = year;
+        viewModel.settings = calendarSettings;
+        viewModel.hasHighlights = !!(dataValue.highlights);
+
+        return viewModel;
     }
 
     export class Visual implements IVisual {
@@ -287,19 +305,27 @@ module powerbi.extensibility.visual {
         private tooltipServiceWrapper: ITooltipServiceWrapper;
         private vm: CalendarViewModel;
         private calendarDataPoints: CalendarDataPoint[];
+        private interactivityService: IInteractivityService;
+        private clearCatcher: d3.Selection<any>;
+        private behavior: CalendarBehavior;
+        private className: string = 'bci-calendar';
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
             this.host = options.host;
 
             let table = this.table = d3.select(options.element)
-                .append('table').classed('bci-calendar', true);
+                .append('table').classed(this.className, true);
 
             this.selectionManager = this.host.createSelectionManager();
             this.selectionIdBuilder = options.host.createSelectionIdBuilder();
             this.tooltipServiceWrapper = createTooltipServiceWrapper(
                 this.host.tooltipService,
                 options.element);
+
+            this.clearCatcher = appendClearCatcher(this.table);
+            this.behavior = new CalendarBehavior();
+            this.interactivityService = createInteractivityService(options.host);
         }
 
         public update(options: VisualUpdateOptions) {
@@ -333,6 +359,21 @@ module powerbi.extensibility.visual {
             this.tooltipServiceWrapper.addTooltip(this.table.selectAll('[id^=bci-calendar]'),
                 (tooltipEvent: TooltipEventArgs<CalendarDataPoint>) => Visual.getTooltipData(<CalendarDataPoint>tooltipEvent.data, cols),
                 (tooltipEvent: TooltipEventArgs<CalendarDataPoint>) => null);
+
+            if (this.interactivityService) {
+                this.interactivityService.applySelectionStateToData(this.vm.dataPoints);
+
+                let behaviorOptions: CalendarBehaviorOptions = {
+                    dayCells: d3.selectAll('[id^=' + this.className + ']'),
+                    clearCatcher: this.clearCatcher,
+                    interactivityService: this.interactivityService,
+                    hasHighlights: this.vm.hasHighlights
+                };
+
+                this.interactivityService.bind(this.vm.dataPoints, this.behavior, behaviorOptions);
+            }
+
+            this.behavior.renderSelection(this.interactivityService.hasSelection());
         }
 
         public destroy(): void {
@@ -435,6 +476,53 @@ module powerbi.extensibility.visual {
                 tooltips.push({ 'displayName': 'No Data' });
             }
             return tooltips;
+        }
+    }
+
+    export interface CalendarBehaviorOptions {
+        dayCells: d3.Selection<any>;
+        clearCatcher: d3.Selection<any>;
+        interactivityService: IInteractivityService;
+        hasHighlights: boolean;
+    }
+
+    export class CalendarBehavior implements IInteractiveBehavior {
+        private static DimmedOpacity: number = 0.4;
+        private static DefaultOpacity: number = 1.0;
+
+        private static getFillOpacity(selected: boolean, highlight: boolean, hasSelection: boolean, hasPartialHighlights: boolean): number {
+            if ((hasPartialHighlights && !highlight) || (hasSelection && !selected)) {
+                return CalendarBehavior.DimmedOpacity;
+            } else {
+                return CalendarBehavior.DefaultOpacity;
+            }
+        }
+
+        private options: CalendarBehaviorOptions;
+
+        public bindEvents(options: CalendarBehaviorOptions, selectionHandler: ISelectionHandler) {
+            this.options = options;
+            let clearCatcher = options.clearCatcher;
+
+            options.dayCells.on('click', (d: any) => {
+                selectionHandler.handleSelection(d.data, (d3.event as MouseEvent).ctrlKey);
+            });
+
+            clearCatcher.on('click', () => {
+                selectionHandler.handleClearSelection();
+            });
+        }
+
+        public renderSelection(hasSelection: boolean) {
+            let options = this.options;
+            let hasHighlights = options.hasHighlights;
+
+            options.dayCells.style('opacity', (d: any) => {
+                let selected = d.data ? d.data.selected : false;
+                let highlight = d.data ? d.data.highlight : false;
+
+                return CalendarBehavior.getFillOpacity(selected, highlight, !highlight && hasSelection, !selected && hasHighlights);
+            });
         }
     }
 }
