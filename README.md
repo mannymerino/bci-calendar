@@ -19,6 +19,7 @@ BCI Calendar is a Power BI custom visual that allows you to view your aggregated
     * [Fields](#fields)
     * [Format](#format)
       * [Calendar Format](#calendar-format)
+      * [Week Numbers](#week-numbers)
       * [Data Colors](#data-colors)
       * [Data Labels](#data-labels)
 * [Known Limitations](#known-limitations)
@@ -39,7 +40,8 @@ Choose a minimum and maximum color value and the visual will display a color gra
 If you would like to include a center color, toggle the `Diverging` slider to `On` and specify a `Center Color`. You can also specify a `Center Value` if desired.
 ![Diverging Colors](assets/bci-calendar-diverging-colors.png "Diverging Colors")
 ### Selection Interaction
-The visual includes selection interaction functionality. Clicking on a particular day in the calendar visual will update the selection in other visuals on the page accordingly.
+The visual includes selection interaction functionality. Clicking on one or more days in the calendar visual will update the selection in other visuals on the page accordingly. Conversely, selections made in other visuals on the page will also update the selection within the calendar as appropriate.
+
 ![Selection Interaction](assets/bci-calendar-selection-interaction.png "Selection Interaction")
 ### Tooltips
 As described in the [Tooltip](#tooltip) section above, this visual supports tooltips and allows customization by adding additional data fields to the `Tooltip` field.
@@ -66,6 +68,7 @@ The following customization and formatting options are available for this custom
 ![Calendar Format](assets/bci-calendar-format-calendar-format.png "Calendar Format")
 * `Month/Year Display`: Choose from `None`, `Month Only`, and `Month and Year` to customize how the month and/or year are displayed in the visual.
 * `Weekday Format`: Choose from `Short` or `Long` to customize how the weekday labels are displayed. `Short` displays the first three letters of the weekday. `Long` displays the full weekday name.
+* `Week Start Day`: Choose the starting day of the week.
 * `Border Thickness`: Specify the thickness, in pixels, of the border displayed around each day.
 * `Border Color`: Use the color picker to choose a color for the border displayed around each day.
 * `Font Color`: Use the color picker to choose a color for the font displaying the Month/Year, Weekdays, and Days.
@@ -74,6 +77,15 @@ The following customization and formatting options are available for this custom
 * `Month Alignment`: Choose the desired alignment for the Month/Year.
 * `Week Alignment`: Choose the desired alignment for the Weekdays.
 * `Day Alignment`: Choose the desired alignment for the Days.
+#### Week Numbers
+![Week Numbers](assets/bci-calendar-format-week-numbers.png "Week Numbers")
+* `On/Off`: Toggle this slider to control whether the calendar should display week numbers.
+* `Use ISO week-numbering`: Toggle this slider to control which week should be considered week 1. [The ISO 8601 definition for week 01 is the week with the Gregorian year's first Thursday in it.](https://en.wikipedia.org/wiki/ISO_week_date#First_week)
+* `Placement`: Choose between `Left` and `Right`. Based on this selection, week numbers will either be placed as the left-most column of the calendar month or the right-most column.
+* `Font Color`: Use the color picker to choose a color for the font displaying the week numbers.
+* `Font Weight`: Enter a value, between 100 and 900, to specify the weight of the font (i.e., level of boldness) displaying the week numbers.
+* `Text Size`: Use the slider to choose a size, in pixels, of the text displaying the week numbers.
+* `Alignment`: Choose the desired alignment for the week numbers.
 #### Data Colors
 ![Data Colors](assets/bci-calendar-format-data-colors.png "Data Colors")
 * `Diverging`: Toggle this slider to control whether the data colors use a center color and value.
@@ -96,11 +108,13 @@ The following customization and formatting options are available for this custom
 #### Title, Background, Lock aspect, Border, General
 These are all default Power BI visual formatting options.
 # Known Limitations
-* The visual doesn't support date hierarchies. If you are having issues viewing your data in the visual, make sure your Date Field is not displaying as "Date Hierarchy".
+* The visual doesn't support date hierarchies. If you are having issues viewing your data in the visual, make sure your `Date Field` is not displaying as "Date Hierarchy".
   
   ![Date Hierarchy](assets/bci-calendar-date-hierarchy.png "Date Hierarchy")
+* Date/Time (versus Date) date fields might not display data properly. When using a Date/Time column in the `Date Field`, it is likely that the underlying data set will have multiple data points for a single day which prevents the visual from displaying the data properly. The current workaround for this is to use a `Date` column for the `Date Field` instead or create a `Date` calculated column if needed. This is being tracked with issue [#7](../../issues/7).
+
+  ![Date/Time](assets/bci-calendar-datetime.png "Date/Time")
 * The visual will use the month/year from the first date in the selected dataset. If your dataset spans multiple months or years, the visual will only show the first month/year.
 * The optimal experience for visualizing your data using this visual is when your report or page is filtered to view one month at a time. For example, using a month/year slicer or page filter.
-* Selection interaction is only one-way in this current version. In other words, you can select a day in the month and other visuals will update accordingly but selecting a data point in another visual will not affect the calendar visual. Stay tuned for a future update that will include this functionality!
 # Support
 [Support](../../wiki/Support)
