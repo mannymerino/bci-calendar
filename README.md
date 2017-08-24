@@ -39,7 +39,7 @@ Choose a minimum and maximum color value and the visual will display a color gra
 If you would like to include a center color, toggle the `Diverging` slider to `On` and specify a `Center Color`. You can also specify a `Center Value` if desired.
 ![Diverging Colors](assets/bci-calendar-diverging-colors.png "Diverging Colors")
 ### Selection Interaction
-The visual includes selection interaction functionality. Clicking on one or more days in the calendar visual will update the selection in other visuals on the page accordingly. Conversely, selections made in other visuals on the page will also update the selection withing the calendar as appropriate.
+The visual includes selection interaction functionality. Clicking on one or more days in the calendar visual will update the selection in other visuals on the page accordingly. Conversely, selections made in other visuals on the page will also update the selection within the calendar as appropriate.
 
 ![Selection Interaction](assets/bci-calendar-selection-interaction.png "Selection Interaction")
 ### Tooltips
