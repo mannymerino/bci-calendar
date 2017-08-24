@@ -110,7 +110,7 @@ These are all default Power BI visual formatting options.
 * The visual doesn't support date hierarchies. If you are having issues viewing your data in the visual, make sure your `Date Field` is not displaying as "Date Hierarchy".
   
   ![Date Hierarchy](assets/bci-calendar-date-hierarchy.png "Date Hierarchy")
-* Date/Time (versus Date) date fields don't display properly. When using a Date/Time field in the `Date Field`, it is likely that the underlying data set will have multiple data points for a single day which prevents the visual from displaying the data properly. The current workaround for this is to create a `Date` calculated field and use that column for the `Date Field` instead. This is being tracked with issue [#7](../../issues/7).
+* Date/Time (versus Date) date fields might not display data properly. When using a Date/Time column in the `Date Field`, it is likely that the underlying data set will have multiple data points for a single day which prevents the visual from displaying the data properly. The current workaround for this is to use a `Date` column for the `Date Field` instead or create a `Date` calculated column if needed. This is being tracked with issue [#7](../../issues/7).
 
   ![Date/Time](assets/bci-calendar-datetime.png "Date/Time")
 * The visual will use the month/year from the first date in the selected dataset. If your dataset spans multiple months or years, the visual will only show the first month/year.
