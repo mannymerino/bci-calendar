@@ -19,6 +19,7 @@ BCI Calendar is a Power BI custom visual that allows you to view your aggregated
     * [Fields](#fields)
     * [Format](#format)
       * [Calendar Format](#calendar-format)
+      * [Week Numbers](#week-numbers)
       * [Data Colors](#data-colors)
       * [Data Labels](#data-labels)
 * [Known Limitations](#known-limitations)
