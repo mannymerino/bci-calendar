@@ -47,6 +47,7 @@ module powerbi.extensibility.visual {
         year: number;
         settings: CalendarSettings;
         hasHighlights: boolean;
+        error: CalendarError;
     };
 
     interface CalendarDataPoint extends SelectableDataPoint {
@@ -104,6 +105,11 @@ module powerbi.extensibility.visual {
         fontWeight: number;
         textSize: number;
         alignment: string;
+    }
+
+    interface CalendarError {
+        hasError: boolean;
+        errorMessage: string;
     }
 
     function visualTransform(options: VisualUpdateOptions, host: IVisualHost): CalendarViewModel {
@@ -185,9 +191,16 @@ module powerbi.extensibility.visual {
             month: null,
             year: null,
             settings: <CalendarSettings>{},
-            hasHighlights: false
+            hasHighlights: false,
+            error: <CalendarError>{ hasError: false }
         };
 
+        if (dataViews[0].categorical && !dataViews[0].categorical.categories[0].source.type.dateTime) {
+            viewModel.error.hasError = true;
+            viewModel.error.errorMessage = 'Invalid \'Date Field\' column used. Please select a valid Date field.';
+            return viewModel;
+        }
+        
         if (!dataViews
             || !dataViews[0]
             || !dataViews[0].categorical
@@ -361,6 +374,8 @@ module powerbi.extensibility.visual {
 
             this.table.selectAll('*').remove();
             this.calendar = bciCalendar.loadCalendar(this.table, viewModel, this.calendarSettings, this.selectionManager, this.host.allowInteractions);
+            
+            if (viewModel.error.hasError) return;
 
             let cols = options.dataViews[0].metadata.columns.filter(c => !c.roles['category']).map(c => c);
             this.tooltipServiceWrapper.addTooltip(this.table.selectAll('[id^=bci-calendar]'),

@@ -39,10 +39,15 @@
 
         var calendar = element;
         var className = calendar.attr("class");
-        var colspan = settings.weekNumbers.show ? 8 : 7;
+        var colspan = (settings.weekNumbers && settings.weekNumbers.show) ? 8 : 7;
+
+        if (viewModel.error.hasError) {
+            noData(calendar, viewModel.error.errorMessage);
+            return;
+        }
 
         if (viewModel.dataPoints.length == 0) {
-            noData(calendar);
+            noData(calendar, 'No data for selected Year and Month.');
             return;
         }
 
@@ -253,13 +258,13 @@
 
     }
 
-    function noData (calendar) {
+    function noData (calendar, message) {
         var thead = calendar.append('thead')
                         .append('tr')
                         .append('td')
                         .attr('colspan', 7)
                         .style('text-align', 'center')
-                        .text('*** No data for selected Year and Month ***');
+                        .text('*** {0} ***'.replace(/\{0\}/g, message));
     };
 
     function mapData (weeks, viewModel) {
