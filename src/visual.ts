@@ -217,7 +217,7 @@ module powerbi.extensibility.visual {
         let objects = dataViews[0].metadata.objects;
         let colorPalette: IColorPalette = host.colorPalette;
         let calendarDataPoints: CalendarDataPoint[] = [];
-        let firstDate: Date = new Date(category.values[0]);
+        let firstDate: Date = new Date(<any>(category.values[0] || category.values[1]));
         let month: number = firstDate.getMonth();
         let year: number = firstDate.getFullYear();
         let tabledata = dataViews[0].table.rows; // used for tooltips
@@ -291,16 +291,19 @@ module powerbi.extensibility.visual {
             let selectionId = selectionIdBuilder.createSelectionId();
             let highlight: any = dataValue.highlights && dataValue.highlights[i] !== null;
 
-            calendarDataPoints.push({
-                category: <string>category.values[i],
-                value: parseFloat(valueFormat.format(dataValue.values[i])),
-                valueText: textFormat.format(dataValue.values[i]),
-                rowdata: tabledata[i],
-                selected: false,
-                identity: selectionId,
-                key: (selectionIdBuilder.createSelectionId() as powerbi.visuals.ISelectionId).getKey(),
-                highlight: highlight
-            });
+            // if condition accounts for possible null dates
+            if (category.values[i]) {
+                calendarDataPoints.push({
+                    category: <string>category.values[i],
+                    value: parseFloat(valueFormat.format(dataValue.values[i])),
+                    valueText: textFormat.format(dataValue.values[i]),
+                    rowdata: tabledata[i],
+                    selected: false,
+                    identity: selectionId,
+                    key: (selectionIdBuilder.createSelectionId() as powerbi.visuals.ISelectionId).getKey(),
+                    highlight: highlight
+                });
+            }
         }
 
         viewModel.dataPoints = calendarDataPoints;
