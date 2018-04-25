@@ -31,7 +31,8 @@
   },
   "dependencies": {
     "d3": "^3.5.5",
+    "powerbi-models": "^1.0.3",
     "powerbi-visuals-utils-formattingutils": "^2.1.0",
-    "powerbi-visuals-utils-interactivityutils": "^1.0.0"
+    "powerbi-visuals-utils-interactivityutils": "^3.2.0"
   }
 }

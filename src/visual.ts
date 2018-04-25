@@ -25,6 +25,8 @@
  */
 
 module powerbi.extensibility.visual {
+    // powerbi.visuals
+    import ISelectionId = powerbi.visuals.ISelectionId;
 
     import valueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
 
@@ -32,9 +34,8 @@ module powerbi.extensibility.visual {
     import ITooltipServiceWrapper = powerbi.extensibility.utils.tooltip.ITooltipServiceWrapper;
     import createTooltipServiceWrapper = powerbi.extensibility.utils.tooltip.createTooltipServiceWrapper;
 
-    // selection interaction libs
+    // // selection interaction libs
     import createInteractivityService = powerbi.extensibility.utils.interactivity.createInteractivityService;
-    import appendClearCatcher = powerbi.extensibility.utils.interactivity.appendClearCatcher;
     import ISelectionHandler = powerbi.extensibility.utils.interactivity.ISelectionHandler;
     import SelectableDataPoint = powerbi.extensibility.utils.interactivity.SelectableDataPoint;
     import IInteractiveBehavior = powerbi.extensibility.utils.interactivity.IInteractiveBehavior;
@@ -50,13 +51,14 @@ module powerbi.extensibility.visual {
         error: CalendarError;
     };
 
-    interface CalendarDataPoint extends SelectableDataPoint {
+    interface CalendarDataPoint extends SelectableDataPoint { 
         value: number;
         valueText: string;
         category: string;
         rowdata: any;
         key: string;
         highlight?: boolean;
+        selectionId: ISelectionId;
     };
 
     interface CalendarSettings {
@@ -300,8 +302,11 @@ module powerbi.extensibility.visual {
                     rowdata: tabledata[i],
                     selected: false,
                     identity: selectionId,
-                    key: (selectionIdBuilder.createSelectionId() as powerbi.visuals.ISelectionId).getKey(),
-                    highlight: highlight
+                    key: (selectionIdBuilder.createSelectionId() as ISelectionId).getKey(),
+                    highlight: highlight,
+                    selectionId: host.createSelectionIdBuilder()
+                        .withCategory(category, i)
+                        .createSelectionId()
                 });
             }
         }
@@ -328,25 +333,34 @@ module powerbi.extensibility.visual {
         private vm: CalendarViewModel;
         private calendarDataPoints: CalendarDataPoint[];
         private interactivityService: IInteractivityService;
-        private clearCatcher: d3.Selection<any>;
         private behavior: CalendarBehavior;
         private className: string = 'bci-calendar';
+        
+        private calendarSelection: d3.selection.Update<CalendarDataPoint>;
+
+        static Config = {
+            defaultOpacity: 1,
+            dimmedOpacity: 0.4
+        };
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
             this.host = options.host;
             this.locale = options.host.locale;
+            this.selectionManager = options.host.createSelectionManager();
 
+            // adds report bookmarks support
+            this.selectionManager.registerOnSelectCallback(() => {
+                this.syncSelectionState(this.calendarSelection, this.selectionManager.getSelectionIds() as ISelectionId[]);
+            });
+            
             let table = this.table = d3.select(options.element)
                 .append('table').classed(this.className, true);
 
-            this.selectionManager = this.host.createSelectionManager();
-            this.selectionIdBuilder = options.host.createSelectionIdBuilder();
             this.tooltipServiceWrapper = createTooltipServiceWrapper(
                 this.host.tooltipService,
                 options.element);
 
-            this.clearCatcher = appendClearCatcher(this.table);
             this.behavior = new CalendarBehavior();
             this.interactivityService = createInteractivityService(options.host);
         }
@@ -386,14 +400,24 @@ module powerbi.extensibility.visual {
                     Visual.getTooltipData(<CalendarDataPoint>tooltipEvent.data, cols, this.locale, viewModel.settings.dataLabels.unit, viewModel.settings.dataLabels.precision),
                 (tooltipEvent: TooltipEventArgs<CalendarDataPoint>) => null);
 
+            this.calendarSelection = this.table
+                .selectAll('.notempty')
+                .data(this.calendarDataPoints);
+
+            this.syncSelectionState(this.calendarSelection, this.selectionManager.getSelectionIds() as ISelectionId[]);
+
             if (this.interactivityService) {
                 this.interactivityService.applySelectionStateToData(this.vm.dataPoints);
 
                 let behaviorOptions: CalendarBehaviorOptions = {
+                    container: this.table,
                     dayCells: d3.selectAll('[id^=' + this.className + ']'),
-                    clearCatcher: this.clearCatcher,
                     interactivityService: this.interactivityService,
-                    hasHighlights: this.vm.hasHighlights
+                    hasHighlights: this.vm.hasHighlights,
+                    calendarVisual: this,
+                    selectionManager: this.selectionManager,
+                    calendarSelection: this.calendarSelection,
+                    allowInteractions: this.host.allowInteractions
                 };
 
                 this.interactivityService.bind(this.vm.dataPoints, this.behavior, behaviorOptions);
@@ -520,13 +544,51 @@ module powerbi.extensibility.visual {
             }
             return tooltips;
         }
+
+        public syncSelectionState(selection: d3.Selection<CalendarDataPoint>, selectionIds: ISelectionId[]): void {
+            if (!selection || !selectionIds) {
+                return;
+            }
+
+            if (!selectionIds.length) {
+                selection.style('opacity', null);
+                return;
+            }
+
+            const self: this = this;
+
+            selection.each(function(calendarDataPoint: CalendarDataPoint) {
+                const isSelected: boolean = self.isSelectionIdInArray(selectionIds, calendarDataPoint.selectionId);
+
+                d3.select(this).style(
+                    "opacity",
+                    isSelected
+                        ? Visual.Config.defaultOpacity
+                        : Visual.Config.dimmedOpacity
+                );
+            });
+        }
+
+        private isSelectionIdInArray(selectionIds: ISelectionId[], selectionId: ISelectionId): boolean {
+            if (!selectionIds || !selectionId) {
+                return false;
+            }
+
+            return selectionIds.some((currentSelectionId: ISelectionId) => {
+                return currentSelectionId.includes(selectionId);
+            });
+        }
     }
 
     export interface CalendarBehaviorOptions {
+        container: d3.Selection<HTMLTableElement>;
         dayCells: d3.Selection<any>;
-        clearCatcher: d3.Selection<any>;
         interactivityService: IInteractivityService;
         hasHighlights: boolean;
+        calendarVisual: Visual;
+        selectionManager: ISelectionManager;
+        calendarSelection: d3.selection.Update<CalendarDataPoint>;
+        allowInteractions: boolean;
     }
 
     export class CalendarBehavior implements IInteractiveBehavior {
@@ -545,15 +607,34 @@ module powerbi.extensibility.visual {
 
         public bindEvents(options: CalendarBehaviorOptions, selectionHandler: ISelectionHandler) {
             this.options = options;
-            let clearCatcher = options.clearCatcher;
+            let calendar = options.calendarVisual;
+            let selectionManager = options.selectionManager;
+            let calendarSelection = options.calendarSelection;
+            let allowInteractions = options.allowInteractions;
 
             options.dayCells.on('click', (d: any) => {
-                selectionHandler.handleSelection(d.data, (d3.event as MouseEvent).ctrlKey);
+                if (allowInteractions) {
+                    const isCtrlPressed: boolean = (d3.event as MouseEvent).ctrlKey;
+                    selectionHandler.handleSelection(d, isCtrlPressed);
+                    selectionManager
+                        .select(d.selectionId, isCtrlPressed)
+                        .then((ids: ISelectionId[]) => {
+                            calendar.syncSelectionState(calendarSelection, ids);
+                        });
+                    
+                    (<Event>d3.event).stopPropagation();
+                }
             });
 
-            clearCatcher.on('click', () => {
-                selectionHandler.handleClearSelection();
-            });
+            options.container.on('click', d => {
+                if (allowInteractions) {
+                    selectionManager
+                        .clear()
+                        .then(() => {
+                            calendar.syncSelectionState(calendarSelection, []);
+                        });
+                }
+            })
         }
 
         public renderSelection(hasSelection: boolean) {
@@ -561,8 +642,8 @@ module powerbi.extensibility.visual {
             let hasHighlights = options.hasHighlights;
 
             options.dayCells.style('opacity', (d: any) => {
-                let selected = d.data ? d.data.selected : false;
-                let highlight = d.data ? d.data.highlight : false;
+                let selected = d.selected;
+                let highlight = d.highlight;
 
                 return CalendarBehavior.getFillOpacity(selected, highlight, !highlight && hasSelection, !selected && hasHighlights);
             });
