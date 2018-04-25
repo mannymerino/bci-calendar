@@ -150,7 +150,7 @@
                 .enter()
                 .append('td')
                 .attr('class', function (d) {
-                    let className = '';
+                    let className = 'notempty';
                     if (d.day <= 0) {
                         className = 'empty';
                     } else if (!d.day && d.week && d.week > 0) {
