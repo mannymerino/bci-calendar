@@ -1,6 +1,6 @@
 !function() {
     var bciCalendar = {};
-    var _this = {};
+    var self = {};
 
     consts = {
         monthNames: [
@@ -29,12 +29,21 @@
     };
 
     bciCalendar.loadCalendar = function (element, viewModel, settings, selectionManager, allowInteractions) {
-        _this = {
+        self = {
             calendar: element,
             viewModel: viewModel,
             settings: settings,
             selectionManager: selectionManager,
-            allowInteractions: allowInteractions
+            allowInteractions: allowInteractions,
+            minValue: settings.calendarColors.minValue || d3.min(viewModel.dataPoints.map(function(d) {
+                return d.value;
+            })),
+            centerValue: settings.calendarColors.centerValue || d3.mean(viewModel.dataPoints.map(function(d) {
+                return d.value;
+            })),
+            maxValue: settings.calendarColors.maxValue || d3.max(viewModel.dataPoints.map(function(d) {
+                return d.value;
+            }))
         };
 
         var calendar = element;
@@ -109,33 +118,17 @@
                 return d;
             });
 
-        var minValue = settings.calendarColors.minValue,
-            centerValue = settings.calendarColors.centerValue,
-            maxValue = settings.calendarColors.maxValue,
-            color = d3.scale.linear();
+        self.linear = d3.scale.linear();
 
         if (settings.calendarColors.diverging) {
-            color
-                .domain([minValue || d3.min(viewModel.dataPoints.map(function(d) {
-                    return d.value;
-                })), 
-                centerValue || d3.mean(viewModel.dataPoints.map(function(d) {
-                    return d.value;
-                })), 
-                maxValue || d3.max(viewModel.dataPoints.map(function(d) {
-                    return d.value;
-                }))])
+            self.linear
+                .domain([self.minValue, self.centerValue, self.maxValue])
                 .range([settings.calendarColors.startColor.solid.color, 
-                settings.calendarColors.centerColor.solid.color,
-                settings.calendarColors.endColor.solid.color]);
+                    settings.calendarColors.centerColor.solid.color,
+                    settings.calendarColors.endColor.solid.color]);
         } else {
-            color
-                .domain([minValue || d3.min(viewModel.dataPoints.map(function(d) {
-                    return d.value;
-                })), 
-                maxValue || d3.max(viewModel.dataPoints.map(function(d) {
-                    return d.value;
-                }))])
+            self.linear
+                .domain([self.minValue, self.maxValue])
                 .range([settings.calendarColors.startColor.solid.color, settings.calendarColors.endColor.solid.color]);
         }
 
@@ -237,7 +230,7 @@
             var day = date.getDate();
             var id = className + '-' + year.toString() + month.toString() + day.toString();
             var td = d3.select('#' + id)
-            td.style('background-color', color(dataValue));
+            td.style('background-color', getColor(dataValue));
 
             height = height || td.node().getBoundingClientRect().height;
 
@@ -301,6 +294,24 @@
             }
         }
     };
+
+    function getColor(dataValue) {
+        const settings = self.settings;
+        let color;
+        if (settings.calendarColors.colorType === 'fixed') {
+            if (settings.calendarColors.diverging) {
+                if (dataValue <= self.maxValue && dataValue > self.centerValue) color = settings.calendarColors.endColor.solid.color;
+                else if (dataValue > self.minValue && dataValue <= self.centerValue) color = settings.calendarColors.centerColor.solid.color;
+                else color = settings.calendarColors.startColor.solid.color;
+            } else {
+                if (dataValue < self.centerValue) color = settings.calendarColors.startColor.solid.color;
+                else color = settings.calendarColors.endColor.solid.color;                
+            }
+        } else {
+            color = self.linear(dataValue);
+        }
+        return color;
+    }
 
     /**
      * Credit: Ported from npm package 'calendar' 
