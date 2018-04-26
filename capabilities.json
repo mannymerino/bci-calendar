@@ -228,6 +228,22 @@
         "calendarColors": {
             "displayName": "Data Colors",
             "properties": {
+                "colorType": {
+                    "displayName": "Type",
+                    "description": "Choose how you would like the data colors to be displayed (Fixed or Gradient).",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "fixed",
+                                "displayName": "Fixed"
+                            },
+                            {
+                                "value": "gradient",
+                                "displayName": "Gradient"
+                            }
+                        ]
+                    }
+                },
                 "diverging": {
                     "displayName": "Diverging",
                     "type": {

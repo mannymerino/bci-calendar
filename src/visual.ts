@@ -79,6 +79,7 @@ module powerbi.extensibility.visual {
     };
 
     interface ColorSettings {
+        colorType: string;
         diverging: boolean;
         startColor: Fill;
         centerColor: Fill;
@@ -137,6 +138,7 @@ module powerbi.extensibility.visual {
             weekAlignment: 'center',
             dayAlignment: 'right',
             calendarColors: {
+                colorType: 'gradient',
                 diverging: false,
                 startColor: {
                     solid: {
@@ -236,6 +238,7 @@ module powerbi.extensibility.visual {
             weekAlignment: getValue<string>(objects, 'calendar', 'weekAlignment', defaultSettings.weekAlignment),
             dayAlignment: getValue<string>(objects, 'calendar', 'dayAlignment', defaultSettings.dayAlignment),
             calendarColors: {
+                colorType: getValue<string>(objects, 'calendarColors', 'colorType', defaultSettings.calendarColors.colorType),
                 diverging: getValue<boolean>(objects, 'calendarColors', 'diverging', defaultSettings.calendarColors.diverging),
                 startColor: getValue<Fill>(objects, 'calendarColors', 'startColor', defaultSettings.calendarColors.startColor),
                 centerColor: getValue<Fill>(objects, 'calendarColors', 'centerColor', defaultSettings.calendarColors.centerColor),
@@ -477,6 +480,7 @@ module powerbi.extensibility.visual {
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
+                            colorType: this.calendarSettings.calendarColors.colorType,
                             diverging: this.calendarSettings.calendarColors.diverging,
                             startColor: this.calendarSettings.calendarColors.startColor,
                             centerColor: this.calendarSettings.calendarColors.diverging ? this.calendarSettings.calendarColors.centerColor : null,
@@ -488,6 +492,17 @@ module powerbi.extensibility.visual {
                         },
                         selector: null
                     });
+                    let object: VisualObjectInstance = objectEnumeration[0];
+                    if (!this.calendarSettings.calendarColors.diverging) {
+                        if (this.calendarSettings.calendarColors.colorType === 'gradient') {
+                            delete object.properties.centerColor;
+                            delete object.properties.centerValue;
+                        } else {
+                            delete object.properties.centerColor;
+                            delete object.properties.minValue;
+                            delete object.properties.maxValue;                            
+                        }
+                    }
                     break;
                 case 'dataLabels':
                     objectEnumeration.push({
