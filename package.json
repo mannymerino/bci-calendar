@@ -1,6 +1,6 @@
 {
   "name": "bci-calendar",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "BCI Calendar is a Power BI custom visual that allows you to view your aggregated data in a month view.",
   "repository": {
     "type": "git",
