@@ -41,8 +41,9 @@ Choose a minimum and maximum color value and the visual will display a color gra
 If you would like to include a center color, toggle the `Diverging` slider to `On` and specify a `Center Color`. You can also specify a `Center Value` if desired.
 ![Diverging Colors](assets/bci-calendar-data-colors-gradient_diverging.png "Diverging Colors")
 ### Fixed Colors
-You now have the ability to choose your desired Data Colors Type. The available options are `Gradient` (default) and `Fixed`. With the new `Fixed` option, the data colors will only display the colors you select, and not a gradient color based on the data value. Similar to using the `Gradient` option, you can toggle the `Diverging` slider. If `On`, you can choose `Minimum Color`, `Center Color`, and `Maximum Color` as well as `Minimum Value`, `Center Value`, and `Maximum Color`.
+You now have the ability to choose your desired Data Colors `Type`. The available options are `Gradient` (default) and `Fixed`. With the new `Fixed` option, the data colors will only display the colors you select, and not a gradient color based on the data value. Similar to using the `Gradient` option, you can toggle the `Diverging` slider. If `On`, you can choose `Minimum Color`, `Center Color`, and `Maximum Color` as well as `Minimum Value`, `Center Value`, and `Maximum Color`.
 ![Fixed Colors - Diverging: On](assets/bci-calendar-data-colors-fixed-diverging.png "Fixed Colors - Diverging: On")
+
 If `Off`, you can choose `Minimum Color` and `Maximum Color` and if desired, can also specify `Center Value`.
 ![Fixed Colors - Diverging: Off](assets/bci-calendar-data-colors-fixed.png "Fixed Colors - Diverging: Off")
 ### Selection Interaction
