@@ -477,24 +477,25 @@ module powerbi.extensibility.visual {
                     });
                     break;
                 case 'calendarColors':
+                    const calendarColors = this.calendarSettings.calendarColors;
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            colorType: this.calendarSettings.calendarColors.colorType,
-                            diverging: this.calendarSettings.calendarColors.diverging,
-                            startColor: this.calendarSettings.calendarColors.startColor,
-                            centerColor: this.calendarSettings.calendarColors.diverging ? this.calendarSettings.calendarColors.centerColor : null,
-                            endColor: this.calendarSettings.calendarColors.endColor,
-                            minValue: this.calendarSettings.calendarColors.minValue,
-                            centerValue: this.calendarSettings.calendarColors.centerValue,
-                            maxValue: this.calendarSettings.calendarColors.maxValue,
-                            noDataColor: this.calendarSettings.calendarColors.noDataColor
+                            colorType: calendarColors.colorType,
+                            diverging: calendarColors.diverging,
+                            startColor: calendarColors.startColor.solid.color !== null ? calendarColors.startColor : null,
+                            centerColor: calendarColors.centerColor.solid.color !== null ? calendarColors.centerColor : null,
+                            endColor: calendarColors.endColor.solid.color !== null ? calendarColors.endColor : null,
+                            minValue: calendarColors.minValue,
+                            centerValue: calendarColors.centerValue,
+                            maxValue: calendarColors.maxValue,
+                            noDataColor: calendarColors.noDataColor.solid.color !== null ? calendarColors.noDataColor : null
                         },
                         selector: null
                     });
                     let object: VisualObjectInstance = objectEnumeration[0];
-                    if (!this.calendarSettings.calendarColors.diverging) {
-                        if (this.calendarSettings.calendarColors.colorType === 'gradient') {
+                    if (!calendarColors.diverging) {
+                        if (calendarColors.colorType === 'gradient') {
                             delete object.properties.centerColor;
                             delete object.properties.centerValue;
                         } else {
