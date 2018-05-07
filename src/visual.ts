@@ -51,6 +51,12 @@ module powerbi.extensibility.visual {
         error: CalendarError;
     };
 
+    interface CalendarDay {
+        day: number,
+        week: number,
+        data: CalendarDataPoint
+    };
+
     interface CalendarDataPoint extends SelectableDataPoint { 
         value: number;
         valueText: string;
@@ -334,12 +340,13 @@ module powerbi.extensibility.visual {
         private selectionIdBuilder: ISelectionIdBuilder;
         private tooltipServiceWrapper: ITooltipServiceWrapper;
         private vm: CalendarViewModel;
+        private calendarDays: CalendarDay[];
         private calendarDataPoints: CalendarDataPoint[];
         private interactivityService: IInteractivityService;
         private behavior: CalendarBehavior;
         private className: string = 'bci-calendar';
         
-        private calendarSelection: d3.selection.Update<CalendarDataPoint>;
+        private calendarSelection: d3.Selection<CalendarDay>;
 
         static Config = {
             defaultOpacity: 1,
@@ -403,9 +410,7 @@ module powerbi.extensibility.visual {
                     Visual.getTooltipData(<CalendarDataPoint>tooltipEvent.data, cols, this.locale, viewModel.settings.dataLabels.unit, viewModel.settings.dataLabels.precision),
                 (tooltipEvent: TooltipEventArgs<CalendarDataPoint>) => null);
 
-            this.calendarSelection = this.table
-                .selectAll('.notempty')
-                .data(this.calendarDataPoints);
+            this.calendarSelection = this.table.selectAll('.notempty');
 
             this.syncSelectionState(this.calendarSelection, this.selectionManager.getSelectionIds() as ISelectionId[]);
 
@@ -560,7 +565,7 @@ module powerbi.extensibility.visual {
             return tooltips;
         }
 
-        public syncSelectionState(selection: d3.Selection<CalendarDataPoint>, selectionIds: ISelectionId[]): void {
+        public syncSelectionState(selection: d3.Selection<CalendarDay>, selectionIds: ISelectionId[]): void {
             if (!selection || !selectionIds) {
                 return;
             }
@@ -572,8 +577,8 @@ module powerbi.extensibility.visual {
 
             const self: this = this;
 
-            selection.each(function(calendarDataPoint: CalendarDataPoint) {
-                const isSelected: boolean = self.isSelectionIdInArray(selectionIds, calendarDataPoint.selectionId);
+            selection.each(function(calendarDay: CalendarDay) {
+                const isSelected: boolean = self.isSelectionIdInArray(selectionIds, calendarDay.data.selectionId);
 
                 d3.select(this).style(
                     "opacity",
@@ -602,7 +607,7 @@ module powerbi.extensibility.visual {
         hasHighlights: boolean;
         calendarVisual: Visual;
         selectionManager: ISelectionManager;
-        calendarSelection: d3.selection.Update<CalendarDataPoint>;
+        calendarSelection: d3.Selection<CalendarDay>;
         allowInteractions: boolean;
     }
 
@@ -630,7 +635,7 @@ module powerbi.extensibility.visual {
             options.dayCells.on('click', (d: any) => {
                 if (allowInteractions) {
                     const isCtrlPressed: boolean = (d3.event as MouseEvent).ctrlKey;
-                    selectionHandler.handleSelection(d, isCtrlPressed);
+                    selectionHandler.handleSelection(d.data, isCtrlPressed);
                     selectionManager
                         .select(d.selectionId, isCtrlPressed)
                         .then((ids: ISelectionId[]) => {
@@ -657,8 +662,8 @@ module powerbi.extensibility.visual {
             let hasHighlights = options.hasHighlights;
 
             options.dayCells.style('opacity', (d: any) => {
-                let selected = d.selected;
-                let highlight = d.highlight;
+                let selected = d.data ? d.data.selected : false;
+                let highlight = d.data ? d.data.highlight : false;
 
                 return CalendarBehavior.getFillOpacity(selected, highlight, !highlight && hasSelection, !selected && hasHighlights);
             });
