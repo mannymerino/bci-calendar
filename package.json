@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/mannymerino/bci-calendar#readme",
   "devDependencies": {
+    "@types/d3": "^3.5.46",
     "powerbi-visuals-utils-dataviewutils": "1.0.1",
     "powerbi-visuals-utils-tooltiputils": "^1.0.0"
   },
