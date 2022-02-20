@@ -28,27 +28,107 @@
         ]
     };
 
+    // would be better to share this between this JS file and visual.ts
+    const defaultSettings = {
+        monthYearDisplay: 'monthYear',
+        weekdayFormat: 'short',
+        weekStartDay: 0,
+        borderWidth: 1,
+        borderColor: {
+            solid: {
+                color: '#000'
+            }
+        },
+        fontColor: {
+            solid: {
+                color: '#000'
+            }
+        },
+        fontWeight: 100,
+        textSize: 10,
+        monthAlignment: 'center',
+        weekAlignment: 'center',
+        dayAlignment: 'right',
+        calendarColors: {
+            colorType: 'gradient',
+            diverging: false,
+            startColor: {
+                solid: {
+                    color: null
+                }
+            },
+            centerColor: {
+                solid: {
+                    color: null
+                }
+            },
+            endColor: {
+                solid: {
+                    color: null
+                }
+            },
+            minValue: null,
+            centerValue: null,
+            maxValue: null,
+            noDataColor: {
+                solid: {
+                    color: null
+                }
+            }
+        },
+        dataLabels: {
+            show: true,
+            unit: 0,
+            fontColor: {
+                solid: {
+                    color: '#000'
+                }
+            },
+            fontWeight: 100,
+            textSize: 8,
+            alignment: 'center'
+        },
+        weekNumbers: {
+            show: false,
+            useIso: false,
+            placement: 'left',
+            fontColor: {
+                solid: {
+                    color: '#000'
+                }
+            },
+            fontWeight: 100,
+            textSize: 8,
+            alignment: 'center'
+        }
+    };
+
     bciCalendar.loadCalendar = function (element, viewModel, settings, selectionManager, allowInteractions) {
+        const {
+            calendarColors = defaultSettings.calendarColors,
+            weekNumbers = defaultSettings.weekNumbers,
+            dataLabels = defaultSettings.dataLabels,
+        } = settings;
         self = {
             calendar: element,
             viewModel: viewModel,
             settings: settings,
             selectionManager: selectionManager,
             allowInteractions: allowInteractions,
-            minValue: settings.calendarColors.minValue || d3.min(viewModel.dataPoints.map(function(d) {
+            minValue: calendarColors.minValue || d3.min(viewModel.dataPoints.map(function(d) {
                 return d.value;
             })),
-            centerValue: settings.calendarColors.centerValue || d3.mean(viewModel.dataPoints.map(function(d) {
+            centerValue: calendarColors.centerValue || d3.mean(viewModel.dataPoints.map(function(d) {
                 return d.value;
             })),
-            maxValue: settings.calendarColors.maxValue || d3.max(viewModel.dataPoints.map(function(d) {
+            maxValue: calendarColors.maxValue || d3.max(viewModel.dataPoints.map(function(d) {
                 return d.value;
             }))
         };
 
         var calendar = element;
         var className = calendar.attr("class");
-        var colspan = (settings.weekNumbers && settings.weekNumbers.show) ? 8 : 7;
+        var colspan = (weekNumbers && weekNumbers.show) ? 8 : 7;
 
         if (viewModel.error.hasError) {
             noData(calendar, viewModel.error.errorMessage);
@@ -68,8 +148,8 @@
 
         var weeks = monthDays(year, month, { 
             weekStartDay: settings.weekStartDay,
-            showWeekNumbers: settings.weekNumbers.show,
-            useIso: settings.weekNumbers.useIso
+            showWeekNumbers: weekNumbers.show,
+            useIso: weekNumbers.useIso
         });
 
         var thead = calendar.append('thead');
@@ -77,11 +157,11 @@
 
         mapData(weeks, viewModel);
         
-        if (settings.weekNumbers.show) {
+        if (weekNumbers.show) {
             // add blank element to start or end  of dayNames[]
-            settings.weekNumbers.placement === 'left' ? dayNames.unshift('') : dayNames.push('');
+            weekNumbers.placement === 'left' ? dayNames.unshift('') : dayNames.push('');
             // add week numbers for each week[] in weeks[]
-            addWeekNumbers(weeks, settings.weekNumbers.placement);
+            addWeekNumbers(weeks, weekNumbers.placement);
         }
 
         // set month header row
@@ -120,16 +200,16 @@
 
         self.linear = d3.scale.linear();
 
-        if (settings.calendarColors.diverging) {
+        if (calendarColors.diverging) {
             self.linear
                 .domain([self.minValue, self.centerValue, self.maxValue])
-                .range([settings.calendarColors.startColor.solid.color, 
-                    settings.calendarColors.centerColor.solid.color,
-                    settings.calendarColors.endColor.solid.color]);
+                .range([calendarColors.startColor.solid.color, 
+                    calendarColors.centerColor.solid.color,
+                    calendarColors.endColor.solid.color]);
         } else {
             self.linear
                 .domain([self.minValue, self.maxValue])
-                .range([settings.calendarColors.startColor.solid.color, settings.calendarColors.endColor.solid.color]);
+                .range([calendarColors.startColor.solid.color, calendarColors.endColor.solid.color]);
         }
 
         // build calendar days for selected month
@@ -159,7 +239,7 @@
                     if (d.day > 0) {
                         color = settings.fontColor.solid.color;
                     } else if (!d.day && d.week > 0) {
-                        color = settings.weekNumbers.fontColor.solid.color;
+                        color = weekNumbers.fontColor.solid.color;
                     }
                     return color;
                 })
@@ -168,7 +248,7 @@
                     if (d.day > 0) {
                         size = settings.textSize + 'px';
                     } else if (!d.day && d.week > 0) {
-                        size = settings.weekNumbers.textSize + 'px';
+                        size = weekNumbers.textSize + 'px';
                     }
                     return size;
                 })
@@ -177,7 +257,7 @@
                     if (d.day > 0) {
                         weight = settings.fontWeight;
                     } else if (!d.day && d.week > 0) {
-                        weight = settings.weekNumbers.fontWeight;
+                        weight = weekNumbers.fontWeight;
                     }
                     return weight;
                 })
@@ -186,7 +266,7 @@
                     if (d.day > 0) {
                         align = settings.dayAlignment;
                     } else if (!d.day && d.week > 0) {
-                        align = settings.weekNumbers.alignment;
+                        align = weekNumbers.alignment;
                     }
                     return align;
                 })
@@ -195,7 +275,7 @@
                     'border-color': settings.borderColor.solid.color
                 })
                 .style('background-color', function(d) {
-                    var noDataColor = settings.calendarColors.noDataColor.solid.color;
+                    var noDataColor = calendarColors.noDataColor.solid.color;
                     return (noDataColor && (noDataColor !== null) && d.day > 0) ? noDataColor : '';
                 })
                 .append('div')
@@ -234,16 +314,16 @@
 
             height = height || td.node().getBoundingClientRect().height;
 
-            if (settings.dataLabels.show && !isNaN(dataValue)) {
+            if (dataLabels.show && !isNaN(dataValue)) {
                 d3.select('#' + id + ' .' + className + '-parent')
                     .append('div')
                     .attr('class', className + '-dataLabel')
                     .style({
-                        'color': settings.dataLabels.fontColor.solid.color,
-                        'font-size': settings.dataLabels.textSize + 'px',
-                        'font-weight': settings.dataLabels.fontWeight,
-                        'text-align': settings.dataLabels.alignment,
-                        'height': parseInt(settings.dataLabels.textSize) + (parseInt(settings.dataLabels.textSize) * .5) + '%'
+                        'color': dataLabels.fontColor.solid.color,
+                        'font-size': dataLabels.textSize + 'px',
+                        'font-weight': dataLabels.fontWeight,
+                        'text-align': dataLabels.alignment,
+                        'height': parseInt(dataLabels.textSize) + (parseInt(dataLabels.textSize) * .5) + '%'
                     })
                     .text(dataLabel);
             }
@@ -296,16 +376,17 @@
     };
 
     function getColor(dataValue) {
-        const settings = self.settings;
+        const { settings } = self;
+        const { calendarColors = defaultSettings.calendarColors } = settings; 
         let color;
-        if (settings.calendarColors.colorType === 'fixed') {
-            if (settings.calendarColors.diverging) {
-                if (dataValue <= self.maxValue && dataValue > self.centerValue) color = settings.calendarColors.endColor.solid.color;
-                else if (dataValue > self.minValue && dataValue <= self.centerValue) color = settings.calendarColors.centerColor.solid.color;
-                else color = settings.calendarColors.startColor.solid.color;
+        if (calendarColors.colorType === 'fixed') {
+            if (calendarColors.diverging) {
+                if (dataValue <= self.maxValue && dataValue > self.centerValue) color = calendarColors.endColor.solid.color;
+                else if (dataValue > self.minValue && dataValue <= self.centerValue) color = calendarColors.centerColor.solid.color;
+                else color = calendarColors.startColor.solid.color;
             } else {
-                if (dataValue < self.centerValue) color = settings.calendarColors.startColor.solid.color;
-                else color = settings.calendarColors.endColor.solid.color;                
+                if (dataValue < self.centerValue) color = calendarColors.startColor.solid.color;
+                else color = calendarColors.endColor.solid.color;                
             }
         } else {
             color = self.linear(dataValue);

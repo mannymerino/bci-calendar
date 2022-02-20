@@ -28,9 +28,15 @@ module powerbi.extensibility.visual {
         private visualHostTooltipService: ITooltipService;
         private rootElement: Element;
         private handleTouchDelay: number;
+        private defaultTooltipService: ITooltipService = {
+            enabled: (): boolean => false,
+            show: (options: TooltipShowOptions): void => undefined,
+            move: (options: TooltipMoveOptions): void => undefined,
+            hide: (options: TooltipHideOptions): void => undefined,
+        };
         
         constructor(tooltipService: ITooltipService, rootElement: Element, handleTouchDelay: number) {
-            this.visualHostTooltipService = tooltipService;
+            this.visualHostTooltipService = tooltipService || this.defaultTooltipService;
             this.handleTouchDelay = handleTouchDelay;
             this.rootElement = rootElement;
         }

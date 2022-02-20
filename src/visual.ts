@@ -121,81 +121,82 @@ module powerbi.extensibility.visual {
         errorMessage: string;
     }
 
-    function visualTransform(options: VisualUpdateOptions, host: IVisualHost): CalendarViewModel {
-        let dataViews = options.dataViews;
-        let defaultSettings: CalendarSettings = {
-            monthYearDisplay: 'monthYear',
-            weekdayFormat: 'short',
-            weekStartDay: 0,
-            borderWidth: 1,
-            borderColor: {
+    const defaultSettings: CalendarSettings = {
+        monthYearDisplay: 'monthYear',
+        weekdayFormat: 'short',
+        weekStartDay: 0,
+        borderWidth: 1,
+        borderColor: {
+            solid: {
+                color: '#000'
+            }
+        },
+        fontColor: {
+            solid: {
+                color: '#000'
+            }
+        },
+        fontWeight: 100,
+        textSize: 10,
+        monthAlignment: 'center',
+        weekAlignment: 'center',
+        dayAlignment: 'right',
+        calendarColors: {
+            colorType: 'gradient',
+            diverging: false,
+            startColor: {
                 solid: {
-                    color: '#000'
+                    color: null
                 }
             },
+            centerColor: {
+                solid: {
+                    color: null
+                }
+            },
+            endColor: {
+                solid: {
+                    color: null
+                }
+            },
+            minValue: null,
+            centerValue: null,
+            maxValue: null,
+            noDataColor: {
+                solid: {
+                    color: null
+                }
+            }
+        },
+        dataLabels: {
+            show: true,
+            unit: 0,
             fontColor: {
                 solid: {
                     color: '#000'
                 }
             },
             fontWeight: 100,
-            textSize: 10,
-            monthAlignment: 'center',
-            weekAlignment: 'center',
-            dayAlignment: 'right',
-            calendarColors: {
-                colorType: 'gradient',
-                diverging: false,
-                startColor: {
-                    solid: {
-                        color: null
-                    }
-                },
-                centerColor: {
-                    solid: {
-                        color: null
-                    }
-                },
-                endColor: {
-                    solid: {
-                        color: null
-                    }
-                },
-                minValue: null,
-                centerValue: null,
-                maxValue: null,
-                noDataColor: {
-                    solid: {
-                        color: null
-                    }
+            textSize: 8,
+            alignment: 'center'
+        },
+        weekNumbers: {
+            show: false,
+            useIso: false,
+            placement: 'left',
+            fontColor: {
+                solid: {
+                    color: '#000'
                 }
             },
-            dataLabels: {
-                show: true,
-                unit: 0,
-                fontColor: {
-                    solid: {
-                        color: '#000'
-                    }
-                },
-                fontWeight: 100,
-                textSize: 8,
-                alignment: 'center'
-            },
-            weekNumbers: {
-                show: false,
-                useIso: false,
-                placement: 'left',
-                fontColor: {
-                    solid: {
-                        color: '#000'
-                    }
-                },
-                fontWeight: 100,
-                textSize: 8,
-                alignment: 'center'
-            }
-        };
+            fontWeight: 100,
+            textSize: 8,
+            alignment: 'center'
+        }
+    };
+
+    function visualTransform(options: VisualUpdateOptions, host: IVisualHost): CalendarViewModel {
+        let dataViews = options.dataViews || [];
         let viewModel: CalendarViewModel = {
             dataPoints: [],
             month: null,
@@ -205,32 +206,36 @@ module powerbi.extensibility.visual {
             error: <CalendarError>{ hasError: false }
         };
 
-        if (dataViews[0].categorical && !dataViews[0].categorical.categories[0].source.type.dateTime) {
+        const safeDataView: DataView = dataViews[0] || ({} as DataView);
+        const safeCategorical: DataViewCategorical = safeDataView.categorical || ({} as DataViewCategorical)
+        const safeCategory: DataViewCategoryColumn = safeCategorical.categories[0] || ({} as DataViewCategoryColumn);
+
+        if (safeDataView.categorical && !safeCategory.source.type.dateTime) {
             viewModel.error.hasError = true;
             viewModel.error.errorMessage = 'Invalid \'Date Field\' column used. Please select a valid Date field.';
             return viewModel;
         }
-        
+
         if (!dataViews
-            || !dataViews[0]
-            || !dataViews[0].categorical
-            || !dataViews[0].categorical.categories
-            || !dataViews[0].categorical.categories[0].source
-            || !dataViews[0].categorical.values
-            || dataViews[0].categorical.categories[0].values.length == 0) {
+            || !safeDataView
+            || !safeDataView.categorical
+            || !safeDataView.categorical.categories
+            || !safeCategory.source
+            || !safeDataView.categorical.values
+            || safeCategory.values.length === 0) {
             return viewModel;
         }
 
-        let categorical = dataViews[0].categorical;
-        let category = categorical.categories[0];
+        let categorical = safeCategorical;
+        let category = safeCategory;
         let dataValue = categorical.values[0];
-        let objects = dataViews[0].metadata.objects;
+        let objects = safeDataView.metadata.objects;
         let colorPalette: IColorPalette = host.colorPalette;
         let calendarDataPoints: CalendarDataPoint[] = [];
         let firstDate: Date = new Date(<any>(category.values[0] || category.values[1]));
         let month: number = firstDate.getMonth();
         let year: number = firstDate.getFullYear();
-        let tabledata = dataViews[0].table.rows; // used for tooltips
+        let tabledata = safeDataView.table.rows; // used for tooltips
         let calendarSettings: CalendarSettings = {
             monthYearDisplay: getValue<string>(objects, 'calendar', 'monthYearDisplay', defaultSettings.monthYearDisplay),
             weekdayFormat: getValue<string>(objects, 'calendar', 'weekdayFormat', defaultSettings.weekdayFormat),
@@ -404,7 +409,9 @@ module powerbi.extensibility.visual {
             
             if (viewModel.error.hasError) return;
 
-            let cols = options.dataViews[0].metadata.columns.filter(c => !c.roles['category']).map(c => c);
+            const safeDataView: DataView = options.dataViews[0] || ({} as DataView);
+            const safeMetadata: DataViewMetadata = safeDataView.metadata || ({ columns: [] } as DataViewMetadata);
+            let cols = safeMetadata.columns.filter(c => !c.roles['category']).map(c => c);
             this.tooltipServiceWrapper.addTooltip(this.table.selectAll('[id^=bci-calendar]'),
                 (tooltipEvent: TooltipEventArgs<CalendarDataPoint>) => 
                     Visual.getTooltipData(<CalendarDataPoint>tooltipEvent.data, cols, this.locale, viewModel.settings.dataLabels.unit, viewModel.settings.dataLabels.precision),
@@ -482,7 +489,7 @@ module powerbi.extensibility.visual {
                     });
                     break;
                 case 'calendarColors':
-                    const calendarColors = this.calendarSettings.calendarColors;
+                    const calendarColors: ColorSettings = this.calendarSettings.calendarColors || defaultSettings.calendarColors;
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
@@ -498,7 +505,7 @@ module powerbi.extensibility.visual {
                         },
                         selector: null
                     });
-                    let object: VisualObjectInstance = objectEnumeration[0];
+                    let object: VisualObjectInstance = objectEnumeration[0] || ({ properties: {} } as VisualObjectInstance);
                     if (!calendarColors.diverging) {
                         if (calendarColors.colorType === 'gradient') {
                             delete object.properties.centerColor;
